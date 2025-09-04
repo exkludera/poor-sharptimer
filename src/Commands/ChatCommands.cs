@@ -309,7 +309,7 @@ namespace SharpTimer
             
             if (playerReplays[slot].replayFrames.Count == 0) return;
 
-            if (!wr) await GetReplayVIPGif(!self ? srSteamID : pbSteamID, slot);
+            //if (!wr) await GetReplayVIPGif(!self ? srSteamID : pbSteamID, slot);
 
             playerTimers[slot].IsReplaying = !playerTimers[slot].IsReplaying;
 
@@ -325,7 +325,7 @@ namespace SharpTimer
             playerReplays[slot].CurrentPlaybackFrame = 0;
 
             if (stageTriggers.Count != 0) playerTimers[slot].StageTimes!.Clear(); //remove previous stage times if the map has stages
-            if (stageTriggers.Count != 0) playerTimers[slot].StageVelos!.Clear(); //remove previous stage times if the map has stages
+            if (stageTriggers.Count != 0) playerTimers[slot].StageVelos!.Clear(); //remove previous stage velo if the map has stages
 
             if (IsAllowedPlayer(player))
             {

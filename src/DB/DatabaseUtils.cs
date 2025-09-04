@@ -2345,7 +2345,7 @@ namespace SharpTimer
             }
         }
 
-        public async Task GetReplayVIPGif(string steamId, int slot)
+        /*public async Task GetReplayVIPGif(string steamId, int slot)
         {
             Server.NextFrame(() => Utils.LogDebug($"Trying to get replay VIP Gif from database"));
             try
@@ -2424,7 +2424,7 @@ namespace SharpTimer
             {
                 Server.NextFrame(() => Utils.LogError($"Error getting ReplayVIPGif from database: {ex}"));
             }
-        }
+        }*/
 
         public async Task<(string, string, int)> GetMapRecordSteamIDFromDatabase(int bonusX = 0, int top10 = 0,
             int style = 0, string mode = "")

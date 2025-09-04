@@ -393,11 +393,12 @@ namespace SharpTimer
 
         private string GetMainMapInfoLine(PlayerTimerInfo playerTimer)
         {
+            string rankLabel = !string.IsNullOrEmpty(playerTimer.CachedRank) ? playerTimer.CachedRank! : (playerTimer.CachedMapPlacement ?? "");
             return !playerTimer.IsReplaying
                 ? $"<font class='fontSize-s stratum-bold-italic' color='gray'>" +
 
                     $"{playerTimer.CachedPB} " +
-                    $"({playerTimer.CachedMapPlacement})" +
+                    $"{rankLabel}" +
                     $"{(RankIconsEnabled ? $" |</font> <img src='{playerTimer.RankHUDIcon}'><font class='fontSize-s stratum-bold-italic' color='gray'>" : "")}" +
                     $"{(enableStyles ? $" | {GetNamedStyle(playerTimer.currentStyle)} | {playerTimer.Mode}<br>" : $" | {playerTimer.Mode}<br>")}" +
                     $"{GetMapDataLine()}" +
