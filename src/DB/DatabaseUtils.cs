@@ -946,16 +946,18 @@ namespace SharpTimer
                             Server.NextFrame(() =>
                                 Utils.LogDebug(
                                     $"Saved player {(bonusX != 0 ? $"bonus {bonusX} time" : "time")} to database for {playerName} {timerTicks} {DateTimeOffset.UtcNow.ToUnixTimeSeconds()}"));
-                            if (enableDb && IsAllowedPlayer(player))
-                                await RankCommandHandler(player, steamId, slot, playerName, true, style, mode);
-                            if (globalRanksEnabled == true)
-                                await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
-                                    beatPB,
-                                    bonusX, style, dBtimesFinished);
+                            
                             if (IsAllowedPlayer(player))
+                            {
                                 Server.NextFrame(() => _ = Task.Run(async () => await PrintMapTimeToChat(player!,
                                     steamId, playerName, dBtimerTicks, timerTicks, bonusX, dBtimesFinished, style,
                                     prevSRTimerTicks, mode)));
+                                await RankCommandHandler(player, steamId, slot, playerName, true, style, mode);
+                            }
+                            if (globalRanksEnabled)
+                                await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
+                                    beatPB,
+                                    bonusX, style, dBtimesFinished);
                             if (enableReplays && onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks)){
                                 if(useBinaryReplays)
                                     _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));

@@ -33,8 +33,6 @@ public partial class SharpTimer : BasePlugin
 {
     public override void Load(bool hotReload)
     {
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
         Instance = this;
 
         Utils = new Utils(this);
