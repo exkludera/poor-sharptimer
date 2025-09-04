@@ -672,14 +672,41 @@ namespace SharpTimer
             else
                 currentMapNamee = mapName;
 
-            var sortedRecords = await GetSortedRecordsFromDatabase(10, bonusX, mapName, style, mode);
-
+            Dictionary<int, PlayerRecord> cachedSortedRecords;
+            switch (mode)
+            {
+                case "Standard":
+                    cachedSortedRecords = SortedCachedStandardRecords;
+                    break;
+                case "85t":
+                    cachedSortedRecords = SortedCached85tRecords;
+                    break;
+                case "102t":
+                    cachedSortedRecords = SortedCached102tRecords;
+                    break;
+                case "128t":
+                    cachedSortedRecords = SortedCached128tRecords;
+                    break;
+                case "Source":
+                    cachedSortedRecords = SortedCachedSourceRecords;
+                    break;
+                case "Bhop":
+                    cachedSortedRecords = SortedCachedBhopRecords;
+                    break;
+                case "Custom":
+                    cachedSortedRecords = SortedCachedCustomRecords;
+                    break;
+                default:
+                    cachedSortedRecords = SortedCachedStandardRecords;
+                    break;
+            }
+            
             Server.NextFrame(() =>
             {
                 if (!IsPlayerOrSpectator(player))
                     return;
 
-                if (sortedRecords.Count == 0)
+                if (cachedSortedRecords.Count == 0)
                 {
                     if (bonusX != 0)
                         Utils.PrintToChat(player!, Localizer["no_records_available_bonus", bonusX, currentMapNamee]);
@@ -697,14 +724,14 @@ namespace SharpTimer
 
                 int rank = 1;
 
-                foreach (var kvp in sortedRecords.Take(10))
+                foreach (var kvp in cachedSortedRecords.Take(10))
                 {
                     string _playerName = kvp.Value.PlayerName!;
                     int timerTicks = kvp.Value.TimerTicks;
 
                     bool showReplays = false;
                     if (enableReplays == true)
-                        showReplays = Task.Run(() => CheckSRReplay(kvp.Value.SteamID!, bonusX, 0, "Standard")).Result;
+                        showReplays = Task.Run(() => CheckSRReplay(kvp.Value.SteamID!, bonusX, 0, mode)).Result;
 
                     string replayIndicator = enableReplays ? (showReplays ? $"{ChatColors.Red}◉" : "") : "";
 

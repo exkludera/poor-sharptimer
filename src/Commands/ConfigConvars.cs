@@ -640,7 +640,24 @@ namespace SharpTimer
             }
             else
             {
-                Utils.LogError("Invalid global ache refresh interval value. Please provide a positive float.");
+                Utils.LogError("Invalid global cache refresh interval value. Please provide a positive value.");
+            }
+        }
+        
+        [ConsoleCommand("sharptimer_record_cache_interval", "Total timespan in which records will be cached. Default value : 60")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRecordCacheConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            if (int.TryParse(args, out int value) && value > 0)
+            {
+                recordCacheInterval = value;
+                Utils.LogDebug($"SharpTimer record cache refresh interval set to {value} seconds.");
+            }
+            else
+            {
+                Utils.LogError("Invalid record cache refresh interval value. Please provide a positive value.");
             }
         }
 

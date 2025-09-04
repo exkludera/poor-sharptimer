@@ -583,17 +583,14 @@ namespace SharpTimer
         {
             var (srSteamID, srPlayerName, srTime) = ("null", "null", "null");
 
-            if (enableDb)
+            if (topSteamID == "x")
             {
-                (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamIDFromDatabase(bonusX, 0, style, mode);
+                if (enableDb)
+                    (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamIDFromDatabase(bonusX, 0, style, mode);
+                else
+                    (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamID(bonusX);
             }
-            else
-            {
-                (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamID(bonusX);
-            }
-
-            if ((srSteamID == "null" || srPlayerName == "null" || srTime == "null") && topSteamID != "x") return false;
-
+            
             string ext = useBinaryReplays ? "dat" : "json";
             string fileName = $"{(topSteamID == "x" ? $"{srSteamID}" : $"{topSteamID}")}_replay.{ext}";
             string playerReplaysPath;
@@ -606,9 +603,8 @@ namespace SharpTimer
                 {
                     if (useBinaryReplays)
                     {
-                        var reader = new BinaryReader(File.Open(playerReplaysPath, FileMode.Open));
+                        using var reader = new BinaryReader(File.Open(playerReplaysPath, FileMode.Open));
                         var version = reader.ReadInt32();
-
                         return version == REPLAY_VERSION;
                     }
 

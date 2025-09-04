@@ -310,7 +310,36 @@ namespace SharpTimer
 
             int placement = 1;
 
-            foreach (var kvp in SortedCachedRecords!.Take(100))
+            Dictionary<int, PlayerRecord> cachedSortedRecords;
+            switch (playerTimers[player.Slot].Mode)
+            {
+                case "Standard":
+                    cachedSortedRecords = SortedCachedStandardRecords;
+                    break;
+                case "85t":
+                    cachedSortedRecords = SortedCached85tRecords;
+                    break;
+                case "102t":
+                    cachedSortedRecords = SortedCached102tRecords;
+                    break;
+                case "128t":
+                    cachedSortedRecords = SortedCached128tRecords;
+                    break;
+                case "Source":
+                    cachedSortedRecords = SortedCachedSourceRecords;
+                    break;
+                case "Bhop":
+                    cachedSortedRecords = SortedCachedBhopRecords;
+                    break;
+                case "Custom":
+                    cachedSortedRecords = SortedCachedCustomRecords;
+                    break;
+                default:
+                    cachedSortedRecords = SortedCachedStandardRecords;
+                    break;
+            }
+            
+            foreach (var kvp in cachedSortedRecords!.Take(100))
             {
                 int recordTimerTicks = kvp.Value.TimerTicks;
 

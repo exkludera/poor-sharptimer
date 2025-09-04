@@ -59,7 +59,14 @@ namespace SharpTimer
         public Dictionary<int, CCSPlayerController> connectedAFKPlayers = [];
         private Dictionary<uint, CCSPlayerController> specTargets = [];
         private EntityCache entityCache = new();
-        public Dictionary<int, PlayerRecord>? SortedCachedRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCachedStandardRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCached85tRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCached102tRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCached128tRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCachedSourceRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCachedBhopRecords = [];
+        public Dictionary<int, PlayerRecord>? SortedCachedCustomRecords = [];
+
         public readonly HttpClient httpClient = new();
         public JsonSerializerOptions jsonSerializerOptions = new()
         {
@@ -268,6 +275,7 @@ namespace SharpTimer
         public bool afkWarning = true;
         public int afkSeconds = 60;
         public int globalCacheInterval = 120;
+        public int recordCacheInterval = 60;
         
         public double lowgravPointModifier = 0.8;
         public double sidewaysPointModifier = 1.3;
