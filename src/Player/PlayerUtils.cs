@@ -229,48 +229,6 @@ namespace SharpTimer
             }
         }
 
-        public async Task<(int, string)> GetStageTime(string steamId, int stageIndex)
-        {
-            string fileName = $"{currentMapName!.ToLower()}_stage_times.json";
-            string playerStageRecordsPath = Path.Join(gameDir, "csgo", "cfg", "SharpTimer", "PlayerStageData", fileName);
-
-            try
-            {
-                using (JsonDocument? jsonDocument = await Utils.LoadJson(playerStageRecordsPath)!)
-                {
-                    if (jsonDocument != null)
-                    {
-                        string jsonContent = jsonDocument.RootElement.GetRawText();
-
-                        Dictionary<string, PlayerStageData> playerData;
-                        if (!string.IsNullOrEmpty(jsonContent))
-                        {
-                            playerData = JsonSerializer.Deserialize<Dictionary<string, PlayerStageData>>(jsonContent)!;
-
-                            if (playerData!.TryGetValue(steamId, out var playerStageData))
-                            {
-                                if (playerStageData.StageTimes != null && playerStageData.StageTimes.TryGetValue(stageIndex, out var time) &&
-                                    playerStageData.StageVelos != null && playerStageData.StageVelos.TryGetValue(stageIndex, out var speed))
-                                {
-                                    return (time, speed);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Utils.LogDebug($"Error in GetStageTime jsonDoc was null");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Utils.LogError($"Error in GetStageTime: {ex.Message}");
-            }
-
-            return (0, string.Empty);
-        }
-
         public async Task<int> GetPreviousPlayerRecord(string steamId, int bonusX = 0)
         {
             string currentMapNamee = bonusX == 0 ? currentMapName! : $"{currentMapName}_bonus{bonusX}";

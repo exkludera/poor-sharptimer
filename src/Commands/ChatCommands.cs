@@ -270,13 +270,12 @@ namespace SharpTimer
             playerReplays.Remove(slot);
             playerReplays[slot] = new PlayerReplays();
 
-            var (srSteamID, srPlayerName, srTime) = ("null", "null", "null");
+            var (srSteamID, srPlayerName, srTime) = ("null", "null", 0);
             var (wrID, wrPlayerName, wrTime) = (0, "null", "null");
             if (!self)
             {
                 if (enableDb)
                     (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamIDFromDatabase(bonusX, top10, style, mode);
-
                 else
                     (srSteamID, srPlayerName, srTime) = await GetMapRecordSteamID(bonusX, top10);
 
@@ -289,7 +288,7 @@ namespace SharpTimer
                 }
             }
 
-            if ((srSteamID == "null" || srPlayerName == "null" || srTime == "null") && !self)
+            if ((srSteamID == "null" || srPlayerName == "null" || srTime == 0) && !self)
             {
                 Server.NextFrame(() => {
                     Utils.PrintToChat(player, Localizer["no_sr_replay"]);

@@ -670,7 +670,7 @@ public partial class SharpTimer
         globalPointsMultiplier = 1.0f;
     }
 
-    public async Task<(string, string, string)> GetMapRecordSteamID(int bonusX = 0, int top10 = 0)
+    public async Task<(string, string, int)> GetMapRecordSteamID(int bonusX = 0, int top10 = 0)
     {
         string mapRecordsPath = Path.Combine(playerRecordsPath!,
             bonusX == 0 ? $"{currentMapName}.json" : $"{currentMapName}_bonus{bonusX}.json");
@@ -700,7 +700,7 @@ public partial class SharpTimer
 
         string steamId64 = "null";
         string playerName = "null";
-        string timerTicks = "null";
+        int timerTicks = 0;
 
         if (top10 != 0 && top10 <= records.Count)
         {
@@ -708,7 +708,7 @@ public partial class SharpTimer
             var record = sortedRecords[top10 - 1];
             steamId64 = record.Key;
             playerName = record.Value.PlayerName!;
-            timerTicks = Utils.FormatTime(record.Value.TimerTicks);
+            timerTicks = record.Value.TimerTicks;
         }
         else
         {
@@ -717,7 +717,7 @@ public partial class SharpTimer
             {
                 steamId64 = minTimerTicksRecord.Key;
                 playerName = minTimerTicksRecord.Value.PlayerName!;
-                timerTicks = Utils.FormatTime(minTimerTicksRecord.Value.TimerTicks);
+                timerTicks = minTimerTicksRecord.Value.TimerTicks;
             }
         }
 

@@ -581,7 +581,7 @@ namespace SharpTimer
 
         public async Task<bool> CheckSRReplay(string topSteamID = "x", int bonusX = 0, int style = 0, string mode = "")
         {
-            var (srSteamID, srPlayerName, srTime) = ("null", "null", "null");
+            var (srSteamID, srPlayerName, srTime) = ("null", "null", 0);
 
             if (topSteamID == "x")
             {
