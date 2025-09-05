@@ -144,12 +144,14 @@ public partial class SharpTimer : BasePlugin
         {
             try
             {
+                ApplyModeCvars(player);
+
                 var moveForward = getMovementButton.Contains("Forward");
                 var moveBackward = getMovementButton.Contains("Backward");
                 var moveLeft = getMovementButton.Contains("Left");
                 var moveRight = getMovementButton.Contains("Right");
                 var usingUse = getMovementButton.Contains("Use");
-
+                
                 // AC Stuff
                 if (useAnticheat)
                 {
@@ -157,8 +159,6 @@ public partial class SharpTimer : BasePlugin
                     QAngle_t viewAngle = userCmd.GetViewAngles()!.Value;
                     ParseStrafes(player, new(viewAngle.X, viewAngle.Y, viewAngle.Z));
                 }
-                
-                ApplyMode(player);
 
                 // Style Stuff
                 if ((playerTimers[player.Slot].IsTimerRunning || playerTimers[player.Slot].IsBonusTimerRunning) &&

@@ -972,7 +972,7 @@ namespace SharpTimer
                 var equal = Utils.IsApproximatelyEqual;
 
                 if (ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>() == false
-                && equal(ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>(), 420)
+                && equal(ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>(), 320)
                 && useCheckpointVerification)
                 {
                     // THICK
@@ -982,8 +982,8 @@ namespace SharpTimer
 
                 //Checks failed, disable global api
                 Utils.ConPrint($"GLOBAL CHECK FAILED -- Current Values:");
-                Utils.ConPrint($"sv_maxspeed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 420]");
-                Utils.ConPrint($"sharptimer_max_start_speed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 420]");
+                Utils.ConPrint($"sv_maxspeed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
+                Utils.ConPrint($"sharptimer_max_start_speed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
                 Utils.ConPrint($"sv_cheats: {ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>()} [should be false]");
                 Utils.ConPrint($"Map is properly zoned?: {useTriggers} [should be true]");
                 Utils.ConPrint($"Use checkpoint verification?: {useCheckpointVerification} [should be true]");

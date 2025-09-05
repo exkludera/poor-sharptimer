@@ -251,9 +251,6 @@ public partial class SharpTimer
                         Utils.LogError("MapExec Error: file name returned null");
                 }
             }, TimerFlags.STOP_ON_MAPCHANGE);
-
-            CacheSortedRecords(true);
-            AddTimer(recordCacheInterval, () => CacheSortedRecords(false), TimerFlags.REPEAT);
             
             if (adServerRecordEnabled) ADtimerServerRecord();
             if (adMessagesEnabled) ADtimerMessages();
@@ -724,55 +721,6 @@ public partial class SharpTimer
         return (steamId64, playerName, timerTicks);
     }
 
-    private void CacheSortedRecords(bool initial)
-    {
-        Task.Run(async () =>
-        {
-            Utils.LogDebug($"Caching sorted records");
-            var enabledModes = ModeManager.GetEnabledModes();
-            
-            var modesToProcess = new List<(Mode mode, string modeString)>();
-            
-            if (enabledModes.Contains(Mode.Standard)) modesToProcess.Add((Mode.Standard, "Standard"));
-            if (enabledModes.Contains(Mode._85t)) modesToProcess.Add((Mode._85t, "85t"));
-            if (enabledModes.Contains(Mode._102t)) modesToProcess.Add((Mode._102t, "102t"));
-            if (enabledModes.Contains(Mode._128t)) modesToProcess.Add((Mode._128t, "128t"));
-            if (enabledModes.Contains(Mode.Source)) modesToProcess.Add((Mode.Source, "Source"));
-            if (enabledModes.Contains(Mode.Bhop)) modesToProcess.Add((Mode.Bhop, "Bhop"));
-            if (enabledModes.Contains(Mode.Custom)) modesToProcess.Add((Mode.Custom, "Custom"));
-            
-            if (modesToProcess.Count == 0) return;
-            
-            TimeSpan delayBetweenCalls = TimeSpan.Zero;
-        
-            if (!initial)
-            {
-                // use 80% of cache interval to account for delayed response time
-                var totalTimeForCalls = TimeSpan.FromSeconds(recordCacheInterval * 0.8);
-                delayBetweenCalls = TimeSpan.FromSeconds(totalTimeForCalls.TotalSeconds / modesToProcess.Count);
-            }
-            
-            foreach (var (mode, modeString) in modesToProcess)
-            {
-                var records = await GetSortedRecordsFromDatabase(100, 0, "", 0, modeString);
-                
-                switch (mode)
-                {
-                    case Mode.Standard: SortedCachedStandardRecords = records; break;
-                    case Mode._85t: SortedCached85tRecords = records; break;
-                    case Mode._102t: SortedCached102tRecords = records; break;
-                    case Mode._128t: SortedCached128tRecords = records; break;
-                    case Mode.Source: SortedCachedSourceRecords = records; break;
-                    case Mode.Bhop: SortedCachedBhopRecords = records; break;
-                    case Mode.Custom: SortedCachedCustomRecords = records; break;
-                }
-                
-                if (modesToProcess.Last().mode != mode)
-                    await Task.Delay(delayBetweenCalls);
-            }
-        });
-    }
-
     private void ADtimerServerRecord()
     {
         if (isADServerRecordTimerRunning) return;
@@ -783,34 +731,7 @@ public partial class SharpTimer
             {
                 Utils.LogDebug($"Running Server Record AD...");
 
-                Dictionary<int, PlayerRecord> cachedSortedRecords;
-                switch (GetModeName(defaultMode))
-                {
-                    case "Standard":
-                        cachedSortedRecords = SortedCachedStandardRecords;
-                        break;
-                    case "85t":
-                        cachedSortedRecords = SortedCached85tRecords;
-                        break;
-                    case "102t":
-                        cachedSortedRecords = SortedCached102tRecords;
-                        break;
-                    case "128t":
-                        cachedSortedRecords = SortedCached128tRecords;
-                        break;
-                    case "Source":
-                        cachedSortedRecords = SortedCachedSourceRecords;
-                        break;
-                    case "Bhop":
-                        cachedSortedRecords = SortedCachedBhopRecords;
-                        break;
-                    case "Custom":
-                        cachedSortedRecords = SortedCachedCustomRecords;
-                        break;
-                    default:
-                        cachedSortedRecords = SortedCachedStandardRecords;
-                        break;
-                }
+                Dictionary<int, PlayerRecord> cachedSortedRecords = await GetSortedRecordsFromDatabase(1, 0, "", 0, GetModeName(defaultMode));
                 
                 if (cachedSortedRecords.Count == 0)
                 {

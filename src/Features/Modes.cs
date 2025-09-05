@@ -14,9 +14,7 @@ public partial class SharpTimer
     private readonly ConVar? _airaccel = ConVar.Find("sv_airaccelerate");
     private readonly ConVar? _accel = ConVar.Find("sv_accelerate");
     private readonly ConVar? _friction = ConVar.Find("sv_friction");
-
-    private readonly Mode[] _playerModes = new Mode[64];
-
+    
     public readonly struct ModeConfig
     {
         public readonly Mode Mode;
@@ -85,7 +83,6 @@ public partial class SharpTimer
 
     public void SetPlayerMode(CCSPlayerController player, Mode mode)
     {
-        _playerModes[player.Slot] = mode;
         playerTimers[player.Slot].Mode = GetModeName(mode);
         playerTimers[player.Slot].ChangedMode = true;
         
@@ -197,17 +194,11 @@ public partial class SharpTimer
         }
     }
 
-    public Mode? GetPlayerMode(CCSPlayerController player)
-    {
-        int? slot = player.Slot;
-        return _playerModes[slot.Value];
-    }
-
-    private void ApplyMode(CCSPlayerController player)
+    private void ApplyModeCvars(CCSPlayerController player)
     {
         if (player == null || player.IsBot || !player.IsValid || player.IsHLTV) return;
-        
-        Mode? playerMode = GetPlayerMode(player);
+
+        if (!TryParseMode(playerTimers[player.Slot].Mode, out Mode playerMode)) return;
         
         if (_accel == null || _airaccel == null || _wishspeed == null || _friction == null)
         {
@@ -215,7 +206,7 @@ public partial class SharpTimer
             return;
         }
 
-        ModeConfig modeConfig = _configValues[ModeIndexLookup[playerMode!.Value]];
+        ModeConfig modeConfig = _configValues[ModeIndexLookup[playerMode]];
         
         _accel.SetValue(modeConfig.Accelerate);
         _airaccel.SetValue(modeConfig.AirAccelerate);

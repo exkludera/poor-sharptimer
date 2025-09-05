@@ -954,10 +954,18 @@ namespace SharpTimer
                                     prevSRTimerTicks, mode)));
                                 await RankCommandHandler(player, steamId, slot, playerName, true, style, mode);
                             }
+
                             if (globalRanksEnabled)
-                                await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
+                            {
+                                var (oldPts, newPts) = await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
                                     beatPB,
                                     bonusX, style, dBtimesFinished);
+                                
+                                Server.NextFrame(() => Utils.PrintToChat(player, Localizer["gained_points",
+                                    playerName, Convert.ToInt32(newPts - oldPts),
+                                    newPts]));
+                            }
+
                             if (enableReplays && onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks)){
                                 if(useBinaryReplays)
                                     _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
@@ -1079,9 +1087,15 @@ namespace SharpTimer
                             var prevSRData = await GetMapRecordSteamIDFromDatabase(bonusX, 0, style, mode);
                             int prevSRTimerTicks = prevSRData.Item3;
                             if (globalRanksEnabled)
-                                await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
+                            {
+                                var (oldPts, newPts) = await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
                                     beatPB,
                                     bonusX, style, dBtimesFinished);
+                                
+                                Server.NextFrame(() => Utils.PrintToChat(player, Localizer["gained_points",
+                                    playerName, Convert.ToInt32(newPts - oldPts),
+                                    newPts]));
+                            }
                             
                             Server.NextFrame(() =>
                                 Utils.LogDebug(
@@ -1906,12 +1920,6 @@ namespace SharpTimer
             }
         }
 
-        public void GainPointsMessage(string playerName, double newPoints, double playerPoints)
-        {
-            Utils.PrintToChatAll(Localizer["gained_points", playerName, Convert.ToInt32(newPoints - playerPoints),
-                newPoints]);
-        }
-
         public (string, int) FixMapAndBonus(string mapName)
         {
             string pattern = @"_bonus(\d+)$";
@@ -1929,7 +1937,7 @@ namespace SharpTimer
             return (mapName, 0);
         }
 
-        public async Task SavePlayerPoints(string steamId, string playerName, int slot, int timerTicks, int oldTicks,
+        public async Task<(int oldPoints, int newPoints)> SavePlayerPoints(string steamId, string playerName, int slot, int timerTicks, int oldTicks,
             string mode, bool beatPB = false, int bonusX = 0, int style = 0, int completions = 0, string mapname = "",
             bool import = false)
         {
@@ -2024,9 +2032,7 @@ namespace SharpTimer
                                     upsertCommand!.AddParameterWithValue("@GlobalPoints", newPoints);
 
                                     await upsertCommand!.ExecuteNonQueryAsync();
-
-                                    if (!import)
-                                        Server.NextFrame(() => GainPointsMessage(playerName, newPoints, playerPoints));
+                                    
                                     Server.NextFrame(() =>
                                         Utils.LogDebug(
                                             $"Set points in database for {playerName} from {playerPoints} to {newPoints}"));
@@ -2035,8 +2041,11 @@ namespace SharpTimer
                                 {
                                     Utils.LogError(
                                         $"Error setting player points to database for {playerName}: player was not on the server anymore");
+                                    return (0, 0);
                                 }
                             }
+
+                            return (playerPoints, newPoints);
                         }
                         // player will always have a stats column generated on connect
                     }
@@ -2047,6 +2056,7 @@ namespace SharpTimer
                 Server.NextFrame(() =>
                     Utils.LogError($"Error getting player stats from database for {playerName}: {ex}"));
             }
+            return (0, 0);
         }
 
         public async Task<int> CalculatePlayerPoints(string steamId, string playerName, int timerTicks, int oldTicks,

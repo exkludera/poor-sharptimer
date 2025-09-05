@@ -663,7 +663,7 @@ namespace SharpTimer
                     else
                     {
                         Utils.PrintToChatAll(Localizer["new_server_record", playerName]);
-                        PlaySound(player, srSound, srSoundAll ? true : false);
+                        PlaySound(player, srSound, srSoundAll);
                     }
                     if (discordWebhookPrintSR && discordWebhookEnabled && enableDb) _ = Task.Run(async () => await DiscordRecordMessage(player, playerName, newTime, steamID, ranking, timesFinished, true, timeDifferenceNoCol, bonusX));
                 }
@@ -686,9 +686,9 @@ namespace SharpTimer
                     Utils.PrintToChatAll(Localizer["map_finish_rank", ranking, timesFinished]);
 
                 Utils.PrintToChatAll(Localizer["timer_time", newTime, timeDifference]);
-                if (enableStyles) Utils.PrintToChatAll(Localizer["timer_style", GetNamedStyle(style)]);
-                Utils.PrintToChatAll(Localizer["timer_mode", mode]);
-                if (enableReplays == true && enableSRreplayBot == true && newSR && (oldticks > newticks || oldticks == 0) && mode == "Standard")
+                if (enableStyles && playerTimers[player.Slot].currentStyle != 0) Utils.PrintToChatAll(Localizer["timer_style", GetNamedStyle(style)]);
+                if (mode != GetModeName(defaultMode))Utils.PrintToChatAll(Localizer["timer_mode", mode]);
+                if (enableReplays && enableSRreplayBot && newSR && (oldticks > newticks || oldticks == 0) && mode == GetModeName(defaultMode))
                     _ = Task.Run(async () => await SpawnReplayBot());
                 
                 try

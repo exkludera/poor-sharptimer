@@ -379,28 +379,29 @@ namespace SharpTimer
                                     $"{((playerButtons & PlayerButtons.Duck) != 0 ? "C" : "_")}";
 
 
-            string hudContent = (hudEnabled ? timerLine +
-                                (VelocityHudEnabled ? veloLine : "") +
-                                (StrafeHudEnabled && !playerTimer.IsReplaying ? syncLine : "") +
-                                infoLine : "") +
-                                (keyEnabled && !playerTimer.IsReplaying ? keysLineNoHtml : "") +
-                                ((playerTimer.IsTester && !playerTimer.IsReplaying) ? $"{(!keyEnabled ? "<br>" : "")}" + playerTimer.TesterBigGif : "") +
+            string hudContent = (hudEnabled
+                                    ? timerLine +
+                                      (VelocityHudEnabled ? veloLine : "") +
+                                      (StrafeHudEnabled && !playerTimer.IsReplaying ? syncLine : "") +
+                                      infoLine
+                                    : "") +
+                                (keyEnabled && !playerTimer.IsReplaying ? keysLineNoHtml : "");
+                                /*((playerTimer.IsTester && !playerTimer.IsReplaying) ? $"{(!keyEnabled ? "<br>" : "")}" + playerTimer.TesterBigGif : "") +
                                 ((playerTimer.IsVip && !playerTimer.IsTester && !playerTimer.IsReplaying) ? $"{(!keyEnabled ? "<br><br>" : "")}" + $"<br><img src='https://files.catbox.moe/{playerTimer.VipBigGif}.gif'><br>" : "") +
-                                ((playerTimer.IsReplaying && playerTimer.VipReplayGif != "x") ? playerTimer.VipReplayGif : "");
+                                ((playerTimer.IsReplaying && playerTimer.VipReplayGif != "x") ? playerTimer.VipReplayGif : "");*/
 
             return hudContent;
         }
 
         private string GetMainMapInfoLine(PlayerTimerInfo playerTimer)
         {
-            string rankLabel = !string.IsNullOrEmpty(playerTimer.CachedRank) ? playerTimer.CachedRank! : (playerTimer.CachedMapPlacement ?? "");
             return !playerTimer.IsReplaying
                 ? $"<font class='fontSize-s stratum-bold-italic' color='gray'>" +
 
                     $"{playerTimer.CachedPB} " +
-                    $"{rankLabel}" +
+                    $"[{playerTimer.CachedMapPlacement}] " +
                     $"{(RankIconsEnabled ? $" |</font> <img src='{playerTimer.RankHUDIcon}'><font class='fontSize-s stratum-bold-italic' color='gray'>" : "")}" +
-                    $"{(enableStyles ? $" | {GetNamedStyle(playerTimer.currentStyle)} | {playerTimer.Mode}<br>" : $" | {playerTimer.Mode}<br>")}" +
+                    $"{(enableStyles && playerTimer.currentStyle != 0 ? $" | {GetNamedStyle(playerTimer.currentStyle)}" : "")} | {playerTimer.Mode}<br>" +
                     $"{GetMapDataLine()}" +
                     $"</font>"
 
@@ -436,7 +437,7 @@ namespace SharpTimer
                         $"{(cachedBonusInfo.Value != null ? $"{Utils.FormatTime(cachedBonusInfo.Value.PbTicks)}" : "Unranked")}" +
                         $"{(cachedBonusInfo.Value != null ? $" ({cachedBonusInfo.Value.Placement})" : "")}</font>" +
                         $"<font class='fontSize-s stratum-bold-italic' color='gray'>" +
-                        $"{(enableStyles ? $" | {GetNamedStyle(playerTimer.currentStyle)} | {playerTimer.Mode}" : $" | {playerTimer.Mode}")}" +
+                        $"{(enableStyles && playerTimer.currentStyle != 0 ? $" | {GetNamedStyle(playerTimer.currentStyle)}" : "")} | {playerTimer.Mode}<br>" +
                         $" | Bonus #{currentBonusNumber} </font>"
                     : $" <font class='fontSize-s stratum-bold-italic' color='gray'>{playerTimer.ReplayHUDString}</font>";
             }
