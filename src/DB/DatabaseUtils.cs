@@ -1997,17 +1997,17 @@ namespace SharpTimer
                             {
                                 case DatabaseType.MySQL:
                                     upsertQuery =
-                                        $@"UPDATE {{PlayerStatsTable}} SET GlobalPoints = @GlobalPoints WHERE SteamID = @SteamID";
+                                        $@"UPDATE {PlayerStatsTable} SET GlobalPoints = @GlobalPoints WHERE SteamID = @SteamID";
                                     upsertCommand = new MySqlCommand(upsertQuery, (MySqlConnection)connection);
                                     break;
                                 case DatabaseType.PostgreSQL:
                                     upsertQuery =
-                                        $@"UPDATE ""{{PlayerStatsTable}}"" SET ""GlobalPoints"" = @GlobalPoints WHERE ""SteamID"" = @SteamID";
+                                        $@"UPDATE ""{PlayerStatsTable}"" SET ""GlobalPoints"" = @GlobalPoints WHERE ""SteamID"" = @SteamID";
                                     upsertCommand = new NpgsqlCommand(upsertQuery, (NpgsqlConnection)connection);
                                     break;
                                 case DatabaseType.SQLite:
                                     upsertQuery =
-                                        $@"UPDATE {{PlayerStatsTable}} SET GlobalPoints = @GlobalPoints WHERE SteamID = @SteamID";
+                                        $@"UPDATE {PlayerStatsTable} SET GlobalPoints = @GlobalPoints WHERE SteamID = @SteamID";
                                     upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
                                     break;
                                 default:
