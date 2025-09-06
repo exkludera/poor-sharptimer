@@ -417,6 +417,31 @@ namespace SharpTimer
             }
         }
 
+        [ConsoleCommand("css_times", "Disable/Enable the times on chat")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void TIMESwitchCommand(CCSPlayerController? player, CommandInfo command)
+        {
+            if (!IsPlayerOrSpectator(player))
+                return;
+
+            var slot = player!.Slot;
+            var playerName = player.PlayerName;
+
+            Utils.LogDebug($"{playerName} calling css_times...");
+
+            if (CommandCooldown(player))
+                return;
+
+            playerTimers[slot].PrintTime = !playerTimers[slot].PrintTime;
+
+            if (!playerTimers[slot].PrintTime)
+                Utils.PrintToChat(player, Localizer["printtime_hidden"]);
+            else
+                Utils.PrintToChat(player, Localizer["printtime_shown"]);
+
+            Utils.LogDebug($"Hide Timer HUD set to: {playerTimers[slot].HideTimerHud} for {playerName}");
+        }
+
         [ConsoleCommand("css_hud", "Draws/Hides The timer HUD")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void HUDSwitchCommand(CCSPlayerController? player, CommandInfo command)

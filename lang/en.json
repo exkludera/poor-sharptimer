@@ -68,6 +68,8 @@
   // Settings
   "hud_shown": "Hud is now: {green}Shown",
   "hud_hidden": "Hud is now: {red}Hidden",
+  "printtime_shown": "Checkpoint/Stage chat prints are now: {green}Shown",
+  "printtime_hidden": "Checkpoint/Stage chat prints are now: {red}Hidden",
   "keys_shown": "Keys is now: {green}Shown",
   "keys_hidden": "Keys is now: {red}Hidden",
   "sounds_on": "Sounds are now: {green}ON",

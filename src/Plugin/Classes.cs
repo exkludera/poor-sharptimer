@@ -186,6 +186,7 @@ namespace SharpTimer
         public bool HideKeys { get; set; }
         public bool HidePlayers { get; set; }
         public bool HideWeapon { get; set; }
+        public bool PrintTime { get; set; } = true;
         public string? Mode { get; set; }
         public bool ChangedMode { get; set; }
         public bool GivenWeapon { get; set; }
