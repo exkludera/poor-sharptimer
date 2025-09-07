@@ -275,6 +275,7 @@ namespace SharpTimer
                         "LastConnected INT DEFAULT 0",
                         "GlobalPoints INT DEFAULT 0",
                         "HideTimerHud BOOL DEFAULT false",
+                        "HideChatSpeed BOOL DEFAULT false",
                         "HideKeys BOOL DEFAULT false",
                         "SoundsEnabled BOOL DEFAULT false",
                         "PlayerFov INT DEFAULT 0",
@@ -313,6 +314,7 @@ namespace SharpTimer
                         @"""LastConnected"" INT DEFAULT 0",
                         @"""GlobalPoints"" INT DEFAULT 0",
                         @"""HideTimerHud"" BOOL DEFAULT false",
+                        @"""HideChatSpeed"" BOOL DEFAULT false",
                         @"""HideKeys"" BOOL DEFAULT false",
                         @"""SoundsEnabled"" BOOL DEFAULT false",
                         @"""PlayerFov"" INT DEFAULT 0",
@@ -351,6 +353,7 @@ namespace SharpTimer
                         "LastConnected INTEGER DEFAULT 0",
                         "GlobalPoints INTEGER DEFAULT 0",
                         "HideTimerHud INTEGER DEFAULT 0",
+                        "HideChatSpeed INTEGER DEFAULT 0",
                         "HideKeys INTEGER DEFAULT 0",
                         "SoundsEnabled INTEGER DEFAULT 1",
                         "PlayerFov INTEGER DEFAULT 0",
@@ -640,6 +643,7 @@ namespace SharpTimer
                                             LastConnected INT,
                                             GlobalPoints INT,
                                             HideTimerHud BOOL,
+                                            HideChatSpeed BOOL,
                                             HideKeys BOOL,
                                             HideChatSpeed BOOL,
                                             SoundsEnabled BOOL,
@@ -658,6 +662,7 @@ namespace SharpTimer
                                             ""LastConnected"" INT,
                                             ""GlobalPoints"" INT,
                                             ""HideTimerHud"" BOOL,
+                                            ""HideChatSpeed"" BOOL,
                                             ""HideKeys"" BOOL,
                                             ""HideChatSpeed"" BOOL,
                                             ""SoundsEnabled"" BOOL,
@@ -676,6 +681,7 @@ namespace SharpTimer
                                             LastConnected INTEGER,
                                             GlobalPoints INTEGER,
                                             HideTimerHud INTEGER,
+                                            HideChatSpeed INTEGER,
                                             HideChatSpeed INTEGER,
                                             HideKeys INTEGER,
                                             SoundsEnabled INTEGER,
@@ -1296,14 +1302,14 @@ namespace SharpTimer
                                     value.HideTimerHud = hideTimerHud;
                                     value.HideKeys = hideKeys;
                                     value.HideWeapon = hideWeapon;
-                                    value.PrintSplits = hideChatSpeed;
+                                    value.HideChatSpeed = hideChatSpeed;
                                     value.HidePlayers = hidePlayers;
                                     value.SoundsEnabled = soundsEnabled;
                                     value.PlayerFov = playerFov;
                                     value.IsVip = isVip;
                                     value.VipBigGif = bigGif;
                                     value.Mode = mode;
-                                    value.PrintSplits = hideChatSpeed;
+                                    value.HideChatSpeed = hideChatSpeed;
                                     value.TimesConnected = timesConnected;
                                 }
                                 else
@@ -1836,7 +1842,7 @@ namespace SharpTimer
                                     upsertCommand!.AddParameterWithValue("@HideKeys", value.HideKeys);
                                     upsertCommand!.AddParameterWithValue("@HideWeapon", value.HideWeapon);
                                     upsertCommand!.AddParameterWithValue("@HidePlayers", value.HidePlayers);
-                                    upsertCommand!.AddParameterWithValue("@HideChatSpeed", value.PrintSplits);
+                                    upsertCommand!.AddParameterWithValue("@HideChatSpeed", value.HideChatSpeed);
                                     upsertCommand!.AddParameterWithValue("@Mode", value.Mode);
                                     upsertCommand!.AddParameterWithValue("@SoundsEnabled", value.SoundsEnabled);
                                     upsertCommand!.AddParameterWithValue("@PlayerFov", value.PlayerFov);
@@ -1905,7 +1911,7 @@ namespace SharpTimer
                                     upsertCommand!.AddParameterWithValue("@SoundsEnabled",
                                         playerTimers[slot].SoundsEnabled);
                                     upsertCommand!.AddParameterWithValue("@PlayerFov", playerTimers[slot].PlayerFov);
-                                    upsertCommand!.AddParameterWithValue("@HideChatSpeed", playerTimers[slot].PrintSplits);
+                                    upsertCommand!.AddParameterWithValue("@HideChatSpeed", playerTimers[slot].HideChatSpeed);
                                     upsertCommand!.AddParameterWithValue("@IsVip", false);
                                     upsertCommand!.AddParameterWithValue("@BigGifID", "x");
                                     upsertCommand!.AddParameterWithValue("@GlobalPoints", 0);

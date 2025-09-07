@@ -432,16 +432,17 @@ namespace SharpTimer
             if (CommandCooldown(player))
                 return;
 
-            playerTimers[slot].PrintSplits = !playerTimers[slot].PrintSplits;
+            playerTimers[slot].HideChatSpeed = !playerTimers[slot].HideChatSpeed;
 
-            if (!playerTimers[slot].PrintSplits)
+            if (!playerTimers[slot].HideChatSpeed)
                 Utils.PrintToChat(player, Localizer["printtime_hidden"]);
             else
                 Utils.PrintToChat(player, Localizer["printtime_shown"]);
 
             if (enableDb)
                 _ = Task.Run(async () => await SetPlayerStats(player, steamID, playerName, slot));
-            Utils.LogDebug($"Hide Chat Speed set to: {playerTimers[slot].HideTimerHud} for {playerName}");
+
+            Utils.LogDebug($"Hide Chat Speed set to: {playerTimers[slot].HideChatSpeed} for {playerName}");
         }
 
         [ConsoleCommand("css_hud", "Draws/Hides The timer HUD")]

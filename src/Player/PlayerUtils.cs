@@ -201,7 +201,7 @@ namespace SharpTimer
         {
             int startSpeed = int.Parse(GetCurrentPlayerSpeed(player));
             int printSpeed = (maxStartingSpeedEnabled && startSpeed > maxStartingSpeed) ? maxStartingSpeed : startSpeed;
-            Utils.PrintToSpec(player, $"{Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}", playerTimers[player.Slot].PrintSplits);
+            Utils.PrintToSpec(player, $"{Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}", !playerTimers[player.Slot].HideChatSpeed);
         }
       
         private void RemovePlayerCollision(CCSPlayerController? player)
