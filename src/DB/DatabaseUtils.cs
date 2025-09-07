@@ -1303,7 +1303,6 @@ namespace SharpTimer
                                     value.IsVip = isVip;
                                     value.VipBigGif = bigGif;
                                     value.Mode = mode;
-                                    value.HideChatSpeed = hideChatSpeed;
                                     value.TimesConnected = timesConnected;
                                 }
                                 else
