@@ -417,7 +417,7 @@ namespace SharpTimer
             }
         }
 
-        [ConsoleCommand("css_times", "Disable/Enable the times on chat")]
+        [ConsoleCommand("css_splits", "Disable/Enable the times on chat")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void TIMESwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
@@ -426,20 +426,22 @@ namespace SharpTimer
 
             var slot = player!.Slot;
             var playerName = player.PlayerName;
-
+            var steamID = player.SteamID.ToString();
             Utils.LogDebug($"{playerName} calling css_times...");
 
             if (CommandCooldown(player))
                 return;
 
-            playerTimers[slot].PrintTime = !playerTimers[slot].PrintTime;
+            playerTimers[slot].PrintSplits = !playerTimers[slot].PrintSplits;
 
-            if (!playerTimers[slot].PrintTime)
+            if (!playerTimers[slot].PrintSplits)
                 Utils.PrintToChat(player, Localizer["printtime_hidden"]);
             else
                 Utils.PrintToChat(player, Localizer["printtime_shown"]);
 
-            Utils.LogDebug($"Hide Timer HUD set to: {playerTimers[slot].HideTimerHud} for {playerName}");
+            if (enableDb)
+                _ = Task.Run(async () => await SetPlayerStats(player, steamID, playerName, slot));
+            Utils.LogDebug($"Hide Chat Speed set to: {playerTimers[slot].HideTimerHud} for {playerName}");
         }
 
         [ConsoleCommand("css_hud", "Draws/Hides The timer HUD")]

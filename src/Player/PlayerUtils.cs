@@ -201,7 +201,7 @@ namespace SharpTimer
         {
             int startSpeed = int.Parse(GetCurrentPlayerSpeed(player));
             int printSpeed = (maxStartingSpeedEnabled && startSpeed > maxStartingSpeed) ? maxStartingSpeed : startSpeed;
-            Utils.PrintToSpec(player, $"{Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}", playerTimers[player.Slot].PrintTime);
+            Utils.PrintToSpec(player, $"{Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}", playerTimers[player.Slot].PrintSplits);
         }
       
         private void RemovePlayerCollision(CCSPlayerController? player)
@@ -762,13 +762,11 @@ namespace SharpTimer
                 }
 
                 string clanTag = $"{rank} " +
-                 (playerTimers[player.Slot].IsVip ? $"{customVIPTag} " : "") +
-                 (AdminManager.PlayerHasPermissions(player, "@css/root") ? "[admin]" : "");
+                 (playerTimers[player.Slot].IsVip ? $"{customVIPTag} " : "");
 
                 string rankColor = GetRankColorForChat(player);
                 string chatTag = $" {rankColor}{rank}{ChatColors.Default} " +
-                 (playerTimers[player.Slot].IsVip ? $"{ChatColors.Blue}{customVIPTag}{ChatColors.Default} " : "") +
-                 (AdminManager.PlayerHasPermissions(player, "@css/root") ? $"{ChatColors.Gold}[admin]{ChatColors.Default} " : "");
+                 (playerTimers[player.Slot].IsVip ? $"{ChatColors.Blue}{customVIPTag}{ChatColors.Default} " : "");
 
                 if (displayChatTags)
                 {
