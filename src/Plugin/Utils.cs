@@ -914,9 +914,8 @@ namespace SharpTimer
             player.PrintToChat($" {Localizer["prefix"]} {message}");
         }
 
-        public void PrintToSpec(CCSPlayerController target, string message, bool printToTarget = false)
+        public void PrintToSpec(CCSPlayerController target, string message)
         {
-            if (printToTarget) target.PrintToChat($"{Localizer["prefix"]} {message}");
             if (target == null || !target.IsValid) return;
             var targetPawn = target.PlayerPawn?.Value;
             if (targetPawn == null || !targetPawn.IsValid) return;
