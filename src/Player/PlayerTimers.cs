@@ -185,8 +185,8 @@ namespace SharpTimer
                     string currentSpeed = GetCurrentPlayerSpeed(player);
 
                     var (srSteamID, srPlayerName, srTime) = ("null", "null", "null");
-                    if (playerTimers[slot].CurrentMapStage == stageTrigger || playerTimers[slot] == null) return;
-
+                    if (playerTimers[slot] == null || playerTimers[slot].CurrentMapStage == stageTrigger) return;
+                    
                     (srSteamID, srPlayerName, srTime) = await GetStageRecordSteamIDFromDatabase(prevStage, style, mode);
 
                     var (previousStageTime, previousStageSpeed) = await GetStageRecordFromDatabase(prevStage, playerSteamID, style, mode);
@@ -197,10 +197,7 @@ namespace SharpTimer
                         if (!IsAllowedPlayer(player)) return;
                         if (playerTimers.TryGetValue(slot, out PlayerTimerInfo? playerTimer))
                         {
-
-                            if (playerTimer.CurrentMapStage == stageTrigger || playerTimer == null) return;
-
-
+                            if (playerTimer == null || playerTimer.CurrentMapStage == stageTrigger) return;
                             //TO-DO: Add player setting to enabled/disable printing time comparisons to chat
                             
                             if (previousStageTime != 0)
@@ -249,7 +246,7 @@ namespace SharpTimer
                         }
                     });
                     
-                    if (playerTimers[player.Slot].currentStyle == 0)
+                    if (playerTimers.TryGetValue(player.Slot, out var timer) && timer?.currentStyle == 0)
                     {
                         await SavePlayerStageTimeToDatabase(player, playerStageTicks, prevStage, currentSpeed, playerSteamID, playerName, slot);
                     }
@@ -352,7 +349,7 @@ namespace SharpTimer
                         }
                     });
 
-                    if (playerTimers[slot].currentStyle == 0)
+                    if (playerTimers.TryGetValue(player.Slot, out var timer) && timer?.currentStyle == 0)
                     {
                         await SavePlayerStageTimeToDatabase(player, playerTimerTicks, cpTrigger, currentStageSpeed, playerSteamID, playerName, slot);
                     }
@@ -385,7 +382,7 @@ namespace SharpTimer
 
                     var (srSteamID, srPlayerName, srTime) = ("null", "null", "null");
                     
-                    if (playerTimers[slot].CurrentMapCheckpoint == bonusCheckpointTrigger || playerTimers[slot] == null) return;
+                    if (playerTimers[slot] == null || playerTimers[slot].CurrentMapCheckpoint == bonusCheckpointTrigger) return;
 
                     (srSteamID, srPlayerName, srTime) = await GetStageRecordSteamIDFromDatabase(bonusCheckpointTrigger, style, mode);
                     var (previousStageTime, previousStageSpeed) = await GetStageRecordFromDatabase(bonusCheckpointTrigger, playerSteamID, style, mode);
@@ -458,7 +455,7 @@ namespace SharpTimer
                         }
                     });
 
-                    if (playerTimers[slot].currentStyle == 0)
+                    if (playerTimers.TryGetValue(player.Slot, out var timer) && timer?.currentStyle == 0)
                     {
                         await SavePlayerStageTimeToDatabase(player, playerTimerTicks, bonusCheckpointTrigger, currentStageSpeed, playerSteamID, playerName, slot);
                     }

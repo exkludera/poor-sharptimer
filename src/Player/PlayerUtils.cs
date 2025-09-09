@@ -20,6 +20,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using FixVectorLeak;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text.Json;
 using SharpTimerAPI.Events;
 using TagsApi;
@@ -130,7 +131,7 @@ namespace SharpTimer
                     player!.PlayerPawn.Value!.AbsVelocity.Y = (float)adjustedY;
                     player!.PlayerPawn.Value!.AbsVelocity.Z = (float)adjustedZ;
 
-                    if (!forceNoDebug) Utils.LogDebug($"Adjusted Velo for {player.PlayerName} to {player.PlayerPawn.Value.AbsVelocity}");
+                    if (!forceNoDebug) Utils.LogDebug($"Adjusted Velo for {player.PlayerName} to {player.PlayerPawn.Value.AbsVelocity.Length().ToString(CultureInfo.InvariantCulture)}");
                 }
                 else
                 {
@@ -168,7 +169,7 @@ namespace SharpTimer
                     player.PlayerPawn.Value.AbsVelocity.X = (float)adjustedX;
                     player.PlayerPawn.Value.AbsVelocity.Y = (float)adjustedY;
 
-                    if (!forceNoDebug) Utils.LogDebug($"Adjusted Velo for {player.PlayerName} to {player.PlayerPawn.Value.AbsVelocity}");
+                    if (!forceNoDebug) Utils.LogDebug($"Adjusted Velo for {player.PlayerName} to {player.PlayerPawn.Value.AbsVelocity.Length2D().ToString(CultureInfo.InvariantCulture)}");
                 }
                 else
                 {
@@ -517,24 +518,30 @@ namespace SharpTimer
         {
             if (player.IsValid && playerTimers!.TryGetValue(player.Slot, out var playerTimer))
             {
-                playerTimers[player.Slot].TimerTicks = 0;
-                playerTimers[player.Slot].StageTicks = 0;
-                playerTimers[player.Slot].BonusTimerTicks = 0;
-                playerTimers[player.Slot].IsTimerRunning = false;
-                playerTimers[player.Slot].IsBonusTimerRunning = false;
+                playerTimer.TimerTicks = 0;
+                playerTimer.StageTicks = 0;
+                playerTimer.BonusTimerTicks = 0;
+                playerTimer.IsTimerRunning = false;
+                playerTimer.IsBonusTimerRunning = false;
 
                 if (stageTriggerCount != 0 && useStageTriggers == true)
                 {
-                    playerTimers[player.Slot].StageTimes!.Clear();
-                    playerTimers[player.Slot].StageVelos!.Clear();
-                    playerTimers[player.Slot].CurrentMapStage = stageTriggers.GetValueOrDefault(callerHandle, 0);
+                    if (playerTimer.StageTimes != null)
+                        playerTimer.StageTimes.Clear();
+            
+                    if (playerTimer.StageVelos != null)
+                        playerTimer.StageVelos.Clear();
+                    playerTimer.CurrentMapStage = stageTriggers.GetValueOrDefault(callerHandle, 0);
                 }
 
                 if (cpTriggerCount != 0)
                 {
-                    playerTimers[player.Slot].StageTimes!.Clear();
-                    playerTimers[player.Slot].StageVelos!.Clear();
-                    playerTimers[player.Slot].CurrentMapCheckpoint = 0;
+                    if (playerTimer.StageTimes != null)
+                        playerTimer.StageTimes.Clear();
+            
+                    if (playerTimer.StageVelos != null)
+                        playerTimer.StageVelos.Clear();
+                    playerTimer.CurrentMapCheckpoint = 0;
                 }
             }
         }

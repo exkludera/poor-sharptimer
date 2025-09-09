@@ -1,3 +1,4 @@
+using System.Globalization;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -97,10 +98,10 @@ public partial class SharpTimer
     {
         var config = _configValues[ModeIndexLookup[mode]];
 
-        player.ReplicateConVar("sv_airaccelerate", config.AirAccelerate.ToString());
-        player.ReplicateConVar("sv_accelerate", config.Accelerate.ToString());
-        player.ReplicateConVar("sv_air_max_wishspeed", config.Wishspeed.ToString());
-        player.ReplicateConVar("sv_friction", config.Friction.ToString());
+        player.ReplicateConVar("sv_airaccelerate", config.AirAccelerate.ToString(CultureInfo.InvariantCulture));
+        player.ReplicateConVar("sv_accelerate", config.Accelerate.ToString(CultureInfo.InvariantCulture));
+        player.ReplicateConVar("sv_air_max_wishspeed", config.Wishspeed.ToString(CultureInfo.InvariantCulture));
+        player.ReplicateConVar("sv_friction", config.Friction.ToString(CultureInfo.InvariantCulture));
     }
 
     private string GetModeName(Mode mode)

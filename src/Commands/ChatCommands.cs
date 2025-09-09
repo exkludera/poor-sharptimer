@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Globalization;
 using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
@@ -1027,8 +1028,8 @@ namespace SharpTimer
                 if (Utils.IsVectorInsideBox(currentPosition + new Vector_t(0, 0, 10), currentMapStartTriggerMaxs.GetValueOrDefault(), currentMapStartTriggerMins.GetValueOrDefault(), false))
                 {
                     // Convert position and rotation to strings
-                    string positionString = $"{currentPosition.X} {currentPosition.Y} {currentPosition.Z}";
-                    string rotationString = $"{currentRotation.X} {currentRotation.Y} {currentRotation.Z}";
+                    string positionString = $"{currentPosition.X.ToString(CultureInfo.InvariantCulture)} {currentPosition.Y.ToString(CultureInfo.InvariantCulture)} {currentPosition.Z.ToString(CultureInfo.InvariantCulture)}";
+                    string rotationString = $"{currentRotation.X.ToString(CultureInfo.InvariantCulture)} {currentRotation.Y.ToString(CultureInfo.InvariantCulture)} {currentRotation.Z.ToString(CultureInfo.InvariantCulture)}";
 
                     playerTimers[slot].SetRespawnPos = positionString;
                     playerTimers[slot].SetRespawnAng = rotationString;
@@ -1042,8 +1043,8 @@ namespace SharpTimer
                 if (Utils.IsVectorInsideBox(currentPosition + new Vector_t(0, 0, 10), currentMapStartC1, currentMapStartC2, true))
                 {
                     // Convert position and rotation to strings
-                    string positionString = $"{currentPosition.X} {currentPosition.Y} {currentPosition.Z}";
-                    string rotationString = $"{currentRotation.X} {currentRotation.Y} {currentRotation.Z}";
+                    string positionString = $"{currentPosition.X.ToString(CultureInfo.InvariantCulture)} {currentPosition.Y.ToString(CultureInfo.InvariantCulture)} {currentPosition.Z.ToString(CultureInfo.InvariantCulture)}";
+                    string rotationString = $"{currentRotation.X.ToString(CultureInfo.InvariantCulture)} {currentRotation.Y.ToString(CultureInfo.InvariantCulture)} {currentRotation.Z.ToString(CultureInfo.InvariantCulture)}";
 
                     playerTimers[slot].SetRespawnPos = positionString;
                     playerTimers[slot].SetRespawnAng = rotationString;
@@ -1789,9 +1790,9 @@ namespace SharpTimer
             QAngle_t currentRotation = player.PlayerPawn.Value.EyeAngles.ToQAngle_t();
 
             // Convert position and rotation to strings
-            string positionString = $"{currentPosition.GetValueOrDefault().X} {currentPosition.GetValueOrDefault().Y} {currentPosition.GetValueOrDefault().Z}";
-            string rotationString = $"{currentRotation.X} {currentRotation.Y} {currentRotation.Z}";
-            string speedString = $"{currentSpeed.X} {currentSpeed.Y} {currentSpeed.Z}";
+            string positionString = $"{currentPosition.GetValueOrDefault().X.ToString(CultureInfo.InvariantCulture)} {currentPosition.GetValueOrDefault().Y.ToString(CultureInfo.InvariantCulture)} {currentPosition.GetValueOrDefault().Z.ToString(CultureInfo.InvariantCulture)}";
+            string rotationString = $"{currentRotation.X.ToString(CultureInfo.InvariantCulture)} {currentRotation.Y.ToString(CultureInfo.InvariantCulture)} {currentRotation.Z.ToString(CultureInfo.InvariantCulture)}";
+            string speedString = $"{currentSpeed.X.ToString(CultureInfo.InvariantCulture)} {currentSpeed.Y.ToString(CultureInfo.InvariantCulture)} {currentSpeed.Z.ToString(CultureInfo.InvariantCulture)}";
 
             // Add the current position and rotation strings to the player's checkpoint list
             if (!playerCheckpoints.ContainsKey(slot))

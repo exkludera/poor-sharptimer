@@ -122,6 +122,12 @@ public partial class SharpTimer
                     globalDisabled = true;
                     Utils.LogError("StripperCS2 detected for current map; disabling globalapi");
                 }
+                
+                if (!Directory.Exists($"{gameDir}/addons/stfixes-metamod/"))
+                {
+                    globalDisabled = true;
+                    Utils.LogError("stfixes-metamod is not installed; disabling globalapi");
+                }
 
                 if (currentMapOverrideDisableTelehop!.Length > 0)
                 {
