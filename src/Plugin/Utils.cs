@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using FixVectorLeak;
+using CounterStrikeSharp.API.Modules.Commands.Targeting;
 
 namespace SharpTimer
 {
@@ -911,6 +912,25 @@ namespace SharpTimer
         public void PrintToChat(CCSPlayerController player, string message)
         {
             player.PrintToChat($" {Localizer["prefix"]} {message}");
+        }
+
+        public void PrintToSpec(CCSPlayerController target, string message)
+        {
+            if (target == null || !target.IsValid) return;
+            var targetPawn = target.PlayerPawn?.Value;
+            if (targetPawn == null || !targetPawn.IsValid) return;
+            foreach (var spectator in Utilities.GetPlayers())
+            {
+                if (spectator == null || !spectator.IsValid) continue;
+                if (spectator.TeamNum != (byte)CsTeam.Spectator) continue;
+                var obsPawn = spectator.PlayerPawn?.Value;
+                if (obsPawn == null || !obsPawn.IsValid) continue;
+
+                if (spectator.Pawn.Value!.ObserverServices!.ObserverTarget.Index == target.Pawn.Index)
+                {
+                    spectator.PrintToChat($"{Localizer["prefix"]} *{target.PlayerName}* - {message}");
+                }
+            }
         }
 
         public void PrintToChatAll(string message)

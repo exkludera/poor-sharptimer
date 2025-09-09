@@ -202,7 +202,8 @@ namespace SharpTimer
         {
             int startSpeed = int.Parse(GetCurrentPlayerSpeed(player));
             int printSpeed = (maxStartingSpeedEnabled && startSpeed > maxStartingSpeed) ? maxStartingSpeed : startSpeed;
-            player.PrintToChat($"{Localizer["prefix"]} {Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}");
+            Utils.PrintToChat(player, $"{Localizer["prefix"]} {Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}");
+            Utils.PrintToSpec(player, $"{Localizer["start_speed"]} {ChatColors.Olive}{printSpeed}");
         }
       
         private void RemovePlayerCollision(CCSPlayerController? player)
@@ -747,7 +748,7 @@ namespace SharpTimer
                     PlaySound(player, srSound, stageSoundAll ? true : false);
                     Utils.PrintToChatAll(Localizer["timer_time", newTime, timeDifference]);
                     //TODO: Discord webhook stage sr
-                    //if (discordWebhookPrintSR && discordWebhookEnabled && enableDb) _ = Task.Run(async () => await DiscordRecordMessage(player, playerName, newTime, steamID, ranking, timesFinished, true, timeDifferenceNoCol, bonusX));
+                    // if (discordWebhookPrintSR && discordWebhookEnabled && enableDb) _ = Task.Run(async () => await DiscordRecordMessage(player, playerName, newTime, steamID, ranking, timesFinished, true, timeDifferenceNoCol, bonusX));
                 }
             });
         }
@@ -768,10 +769,12 @@ namespace SharpTimer
                     return;
                 }
 
-                string clanTag = $"{rank} {(playerTimers[player.Slot].IsVip ? $"{customVIPTag}" : "")}";
+                string clanTag = $"{rank} " +
+                 (playerTimers[player.Slot].IsVip ? $"{customVIPTag} " : "");
 
                 string rankColor = GetRankColorForChat(player);
-                string chatTag = $" {rankColor}{rank} ";
+                string chatTag = $" {rankColor}{rank}{ChatColors.Default} " +
+                 (playerTimers[player.Slot].IsVip ? $"{ChatColors.Blue}{customVIPTag}{ChatColors.Default} " : "");
 
                 if (displayChatTags)
                 {
