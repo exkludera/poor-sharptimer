@@ -976,7 +976,7 @@ namespace SharpTimer
         public bool CheckPlugins()
         {
             return !Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}") &&
-                   Directory.Exists($"{gameDir}/csgo/addons/stfixes-metamod/");
+                   File.Exists($"{gameDir}/csgo/addons/metamod/stfixes-metamod.vdf");
         }
 
         public string GetHash()

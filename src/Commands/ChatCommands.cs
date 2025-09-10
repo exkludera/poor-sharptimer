@@ -182,7 +182,7 @@ namespace SharpTimer
                     Utils.LogError(
                         $"Using StripperCS2 on current map?: {Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}")} [should be false]");
                     Utils.LogError(
-                        $"Using stfixes-metamod?: {Directory.Exists($"{gameDir}/csgo/addons/stfixes-metamod/")} [should be true]");
+                        $"Using stfixes-metamod?: {File.Exists($"{gameDir}/csgo/addons/metamod/stfixes-metamod.vdf")} [should be true]");
                 }
             });
         }
