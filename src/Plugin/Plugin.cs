@@ -113,6 +113,11 @@ public partial class SharpTimer
 
                         int serverId = await GetServerIDAsync(ip, port);
                         CacheServerID(serverId);
+                        if (serverId == 0)
+                        {
+                            // ip and port do not match what we have in the global db
+                            globalDisabled = true;
+                        }
                     });
 
                     AddTimer(globalCacheInterval, async () => await CacheWorldRecords(),
@@ -123,13 +128,13 @@ public partial class SharpTimer
                 
                 
 
-                if (Directory.Exists($"{gameDir}/addons/StripperCS2/maps/{Server.MapName}"))
+                if (Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}"))
                 {
                     globalDisabled = true;
                     Utils.LogError("StripperCS2 detected for current map; disabling globalapi");
                 }
                 
-                if (!Directory.Exists($"{gameDir}/addons/stfixes-metamod/"))
+                if (!File.Exists($"{gameDir}/csgo/addons/metamod/stfixes-metamod.vdf"))
                 {
                     globalDisabled = true;
                     Utils.LogError("stfixes-metamod is not installed; disabling globalapi");

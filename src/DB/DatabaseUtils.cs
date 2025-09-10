@@ -991,29 +991,22 @@ namespace SharpTimer
                                  if (prevPBTime > Utils.TicksToDecimal(timerTicks) || prevPBTime == 0)
                                     beatGlobalPB = true;
 
-                                 var record_payload = new List<GlobalRecord>
+                                 var record_payload = new GlobalRecord
                                  {
-                                    new GlobalRecord()
-                                    {
-                                        player_id = playerCache.PlayerID[player],
-                                        server_id = serverCache.ServerID,
-                                        map_id = mapCache.MapID,
-                                        bonus = bonusX,
-                                        mode = playerTimers[slot].Mode,
-                                        style = GetNamedStyle(style),
-                                        time = Utils.TicksToDecimal(timerTicks),
-                                        created_on = timeCreated
-                                    }
-                                };
+                                     player_id = playerCache.PlayerID[player],
+                                     server_id = serverCache.ServerID,
+                                     map_id = mapCache.MapID,
+                                     bonus = bonusX,
+                                     mode = playerTimers[slot].Mode,
+                                     style = GetNamedStyle(style),
+                                     time = Utils.TicksToDecimal(timerTicks),
+                                     created_on = timeCreated
+                                 };
 
                                 _ = Task.Run(async () =>
                                 {
                                     await SubmitRecordAsync(record_payload);
                                     int recordID = await GetRecordIDAsync(playerId, timeCreated);
-                                    int globalPoints = await CalculateGlobalPoints(playerId,
-                                        Utils.TicksToDecimal(timerTicks), bonusX, style, mode);
-                                    await SubmitPointsAsync(playerId, globalPoints, recordID);
-                                    await UpdateTotalPointsAsync(playerId);
                                     if (beatGlobalPB && useBinaryReplays && style == 0)
                                     {
                                         var replay_payload = new ReplayData
@@ -1131,29 +1124,22 @@ namespace SharpTimer
                                 if (prevPBTime > Utils.TicksToDecimal(timerTicks) || prevPBTime == 0)
                                     beatGlobalPB = true;
 
-                                var record_payload = new List<GlobalRecord>
+                                var record_payload = new GlobalRecord
                                 {
-                                    new GlobalRecord()
-                                    {
-                                        player_id = playerCache.PlayerID[player],
-                                        server_id = serverCache.ServerID,
-                                        map_id = mapCache.MapID,
-                                        bonus = bonusX,
-                                        mode = playerTimers[slot].Mode,
-                                        style = GetNamedStyle(style),
-                                        time = Utils.TicksToDecimal(timerTicks),
-                                        created_on = timeCreated
-                                    }
+                                    player_id = playerCache.PlayerID[player],
+                                    server_id = serverCache.ServerID,
+                                    map_id = mapCache.MapID,
+                                    bonus = bonusX,
+                                    mode = playerTimers[slot].Mode,
+                                    style = GetNamedStyle(style),
+                                    time = Utils.TicksToDecimal(timerTicks),
+                                    created_on = timeCreated
                                 };
 
                                 _ = Task.Run(async () =>
                                 {
                                     await SubmitRecordAsync(record_payload);
                                     int recordID = await GetRecordIDAsync(playerId, timeCreated);
-                                    int globalPoints = await CalculateGlobalPoints(playerId,
-                                        Utils.TicksToDecimal(timerTicks), bonusX, style, mode);
-                                    await SubmitPointsAsync(playerId, globalPoints, recordID);
-                                    await UpdateTotalPointsAsync(playerId);
                                     if (beatGlobalPB && useBinaryReplays && style == 0)
                                     {
                                         var replay_payload = new ReplayData
