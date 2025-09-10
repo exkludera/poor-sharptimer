@@ -900,9 +900,6 @@ namespace SharpTimer
             if (apiKey == "")
                 return false;
 
-            if (globalDisabled)
-                return false;
-
             try
             {
                 var content = new StringContent("", Encoding.UTF8, "application/json");
@@ -931,9 +928,6 @@ namespace SharpTimer
         public async Task<bool> CheckHashAsync()
         {
             if (apiKey == "")
-                return false;
-
-            if (globalDisabled)
                 return false;
 
             try
@@ -965,36 +959,24 @@ namespace SharpTimer
             }
         }
 
-        public bool CheckCvarsAndMaxVelo()
+        public bool CheckCvars()
         {
-            if (!globalDisabled)
-            {
-                var equal = Utils.IsApproximatelyEqual;
+            var equal = Utils.IsApproximatelyEqual;
 
-                if (ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>() == false
+            if (ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>() == false 
                 && equal(ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>(), 320)
-                && useCheckpointVerification)
-                {
-                    // THICK
-                    globalChecksPassed = true;
-                    return true;
-                }
-
-                //Checks failed, disable global api
-                Utils.ConPrint($"GLOBAL CHECK FAILED -- Current Values:");
-                Utils.ConPrint($"sv_maxspeed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
-                Utils.ConPrint($"sharptimer_max_start_speed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
-                Utils.ConPrint($"sv_cheats: {ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>()} [should be false]");
-                Utils.ConPrint($"Map is properly zoned?: {useTriggers} [should be true]");
-                Utils.ConPrint($"Use checkpoint verification?: {useCheckpointVerification} [should be true]");
-                Utils.ConPrint($"Using StripperCS2 on current map?: {Directory.Exists($"{gameDir}/addons/StripperCS2/maps/{Server.MapName}")} [should be false]");
-
-                globalDisabled = true;
-                globalChecksPassed = false;
-                return false;
+                && useCheckpointVerification
+                && useTriggers)
+            { 
+                return true;
             }
-            //Checks failed, disable global api
             return false;
+        }
+
+        public bool CheckPlugins()
+        {
+            return !Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}") &&
+                   Directory.Exists($"{gameDir}/csgo/addons/stfixes-metamod/");
         }
 
         public string GetHash()

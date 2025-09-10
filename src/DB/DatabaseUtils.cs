@@ -975,26 +975,24 @@ namespace SharpTimer
 
                             Server.NextFrame(async () =>
                             {
-                                bool globalCheck = CheckCvarsAndMaxVelo();
-                                if (!globalCheck || apiKey == "" || globalDisabled || !mapCache.Verified)
+                                 if (globalDisabled)
+                                    return;
+                                 
+                                 DateTimeOffset timeCreated = DateTimeOffset.UtcNow;
+                                 int playerId = playerCache.PlayerID[player];
+
+                                 if (playerTimers[slot].Mode == "Custom")
                                     return;
 
-
-                                DateTimeOffset timeCreated = DateTimeOffset.UtcNow;
-                                int playerId = playerCache.PlayerID[player];
-
-                                if (playerTimers[slot].Mode == "Custom")
-                                    return;
-
-                                //first lets see if the new record beats global pb
-                                var beatGlobalPB = false;
-                                var prevPBTime = await GetPreviousPlayerRecordFromGlobal(playerId, playerTimers[slot].Mode,
+                                 //first lets see if the new record beats global pb
+                                 var beatGlobalPB = false;
+                                 var prevPBTime = await GetPreviousPlayerRecordFromGlobal(playerId, playerTimers[slot].Mode,
                                     GetNamedStyle(style), bonusX);
-                                if (prevPBTime > Utils.TicksToDecimal(timerTicks) || prevPBTime == 0)
+                                 if (prevPBTime > Utils.TicksToDecimal(timerTicks) || prevPBTime == 0)
                                     beatGlobalPB = true;
 
-                                var record_payload = new List<GlobalRecord>
-                                {
+                                 var record_payload = new List<GlobalRecord>
+                                 {
                                     new GlobalRecord()
                                     {
                                         player_id = playerCache.PlayerID[player],
@@ -1805,7 +1803,7 @@ namespace SharpTimer
                                                     ""HideWeapon"" = EXCLUDED.""HideWeapon"",
                                                     ""HidePlayers"" = EXCLUDED.""HidePlayers"",
                                                     ""Mode"" = EXCLUDED.""Mode"",
-                                                    ""HideChatSpeed"" = EXCLUDED.""HideChatSpeed"",
+                                                    ""HideChatSpeed"" = EXCLUDED.""HideChatSpeed""
                                                     ";
                                     upsertCommand = new NpgsqlCommand(upsertQuery, (NpgsqlConnection)connection);
                                     break;

@@ -22,6 +22,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Admin;
+using CounterStrikeSharp.API.Modules.Cvars;
 using FixVectorLeak;
 
 namespace SharpTimer
@@ -152,47 +153,38 @@ namespace SharpTimer
 
         [ConsoleCommand("css_gc", "Globalcheck")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-        public async void GlobalCheckCommand(CCSPlayerController? player, CommandInfo command)
+        public void GlobalCheckCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null || !IsAllowedPlayer(player))
                 return;
 
-            if (apiKey == "")
-            {
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Missing API Key!"));
-                return;
-            }
-            
-            var validKey = await CheckKeyAsync();
-            if (!validKey)
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Invalid API Key!"));
-            else
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.Green}Valid API Key"));
-
-            var validHash = await CheckHashAsync();
-            if (!validHash)
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Invalid ST build!"));
-            else
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.Green}Valid ST build"));
-            
-            if (!mapCache.Verified)
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Map is not verified!"));
-            else
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.Green}Map is verified"));
-            
             Server.NextFrame(() =>
             {
-                bool globalCheck = CheckCvarsAndMaxVelo();
-                if (!globalCheck)
-                    Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Cvar Check Failed");
-                else
-                    Utils.PrintToChat(player, $"[GC] {ChatColors.Green}Cvar Check Passed");
-            });
+                Utils.PrintToChat(player,
+                    $"API Key: {(validKey ? $"{ChatColors.Green}✓{ChatColors.Default}" : $"{ChatColors.DarkRed}✗{ChatColors.Default}")}"
+                    + $" | Timer Version: {(validHash ? $"{ChatColors.Green}✓{ChatColors.Default}" : $"{ChatColors.DarkRed}✗{ChatColors.Default}")}"
+                    + $" | Plugins: {(validPlugins ? $"{ChatColors.Green}✓{ChatColors.Default}" : $"{ChatColors.DarkRed}✗{ChatColors.Default}")}"
+                    + $" | Cvars: {(validCvars ? $"{ChatColors.Green}✓{ChatColors.Default}" : $"{ChatColors.DarkRed}✗{ChatColors.Default}")}"
+                    + $" | Map: {(mapCache.Verified ? $"{ChatColors.Green}✓{ChatColors.Default}" : $"{ChatColors.DarkRed}✗{ChatColors.Default}")}");
 
-            if (!globalDisabled && validKey && validHash && mapCache.Verified)
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.Green}All checks passed!"));
-            else
-                Server.NextFrame(() => Utils.PrintToChat(player, $"[GC] {ChatColors.LightRed}Some checks failed"));
+                if (!validKey || !validHash || !validPlugins || !validCvars || !mapCache.Verified)
+                {
+                    Utils.LogError($"GLOBAL CHECK FAILED -- Current Values:");
+                    Utils.LogError(
+                        $"sv_maxspeed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
+                    Utils.LogError(
+                        $"sharptimer_max_start_speed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
+                    Utils.LogError($"sv_cheats: {ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>()} [should be false]");
+                    Utils.LogError($"Verified plugin version?: {validHash} [should be true]");
+                    Utils.LogError($"Map is properly zoned?: {useTriggers} [should be true]");
+                    Utils.LogError($"Current map is global verified?: {mapCache.Verified} [should be true]");
+                    Utils.LogError($"Use checkpoint verification?: {useCheckpointVerification} [should be true]");
+                    Utils.LogError(
+                        $"Using StripperCS2 on current map?: {Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}")} [should be false]");
+                    Utils.LogError(
+                        $"Using stfixes-metamod?: {Directory.Exists($"{gameDir}/csgo/addons/stfixes-metamod/")} [should be true]");
+                }
+            });
         }
 
         [ConsoleCommand("css_gethash", "GetHash")]

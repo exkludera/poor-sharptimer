@@ -96,10 +96,14 @@ public partial class SharpTimer
                     string ip = Utils.GetIPAndPort().Item1;
                     int port = Utils.GetIPAndPort().Item2;
                     long addonID = GetAddonID();
+                    validPlugins = CheckPlugins();
+                    validCvars = CheckCvars();
+                    
                     Server.NextFrame(async () =>
                     {
-                        hashCheck = await CheckHashAsync();
-                        if (!hashCheck)
+                        validKey = await CheckKeyAsync();
+                        validHash = await CheckHashAsync();
+                        if (!validKey || !validHash || !validPlugins || !validCvars)
                             globalDisabled = true;
                         
                         int mapId = await GetMapIDAsync(addonID);
@@ -116,6 +120,8 @@ public partial class SharpTimer
                     AddTimer(globalCacheInterval, async () => await CacheGlobalPoints(),
                         TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
                 }
+                
+                
 
                 if (Directory.Exists($"{gameDir}/addons/StripperCS2/maps/{Server.MapName}"))
                 {
