@@ -82,10 +82,17 @@ public partial class SharpTimer
 
                     _ = Task.Run(async () =>
                     {
-                        using (var connection = OpenConnection())
+                        try
                         {
-                            await CheckTablesAsync();
-                            ExecuteMigrations(connection);
+                            using (var connection = OpenConnection())
+                            {
+                                await CheckTablesAsync();
+                                ExecuteMigrations(connection);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Utils.LogError($"Migration error: {ex.Message};");
                         }
                     });
                     sqlCheck = true;

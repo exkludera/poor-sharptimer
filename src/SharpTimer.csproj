@@ -18,7 +18,8 @@
 		</PackageReference>
         <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
         <PackageReference Include="Npgsql" Version="8.0.3" />
-        <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+        <PackageReference Include="Microsoft.Data.SQLite" Version="8.0.8" />
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.6" />
         <ProjectReference Include="..\SharpTimerAPI\SharpTimerAPI.csproj" />
         <Reference Include="API/TagsApi.dll" />
     </ItemGroup>

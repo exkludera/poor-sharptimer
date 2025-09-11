@@ -23,7 +23,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using System.Data;
 using Npgsql;
 using System.Data.Common;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.Text.RegularExpressions;
 
 namespace SharpTimer
@@ -51,8 +51,8 @@ namespace SharpTimer
                     await (connection as NpgsqlConnection)!.OpenAsync();
                     break;
                 case DatabaseType.SQLite:
-                    connection = new SQLiteConnection(await GetConnectionStringFromConfigFile());
-                    await (connection as SQLiteConnection)!.OpenAsync();
+                    connection = new SqliteConnection(await GetConnectionStringFromConfigFile());
+                    await (connection as SqliteConnection)!.OpenAsync();
                     break;
             }
 
@@ -80,8 +80,8 @@ namespace SharpTimer
                     (connection as NpgsqlConnection)!.Open();
                     break;
                 case DatabaseType.SQLite:
-                    connection = new SQLiteConnection(GetConnectionStringOnMainThread());
-                    (connection as SQLiteConnection)!.Open();
+                    connection = new SqliteConnection(GetConnectionStringOnMainThread());
+                    (connection as SqliteConnection)!.Open();
                     break;
             }
 
@@ -451,7 +451,7 @@ namespace SharpTimer
                                             Style INT,
                                             PRIMARY KEY (MapName, SteamID, Style)
                                         )";
-                    createTableCommand = new SQLiteCommand(createTableQuery, (SQLiteConnection)connection);
+                    createTableCommand = new SqliteCommand(createTableQuery, (SqliteConnection)connection);
                     break;
                 default:
                     createTableCommand = null;
@@ -505,7 +505,7 @@ namespace SharpTimer
                     break;
                 case DatabaseType.SQLite:
                     query = $"SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '{tableName}'";
-                    command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                    command = new SqliteCommand(query, (SqliteConnection)connection);
                     break;
                 default:
                     command = null;
@@ -545,7 +545,7 @@ namespace SharpTimer
                     break;
                 case DatabaseType.SQLite:
                     query = $"PRAGMA table_info({tableName})";
-                    command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                    command = new SqliteCommand(query, (SqliteConnection)connection);
                     break;
                 default:
                     command = null;
@@ -606,7 +606,7 @@ namespace SharpTimer
                     break;
                 case DatabaseType.SQLite:
                     query = $"ALTER TABLE {tableName} ADD COLUMN {columnDefinition}";
-                    command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                    command = new SqliteCommand(query, (SqliteConnection)connection);
                     break;
                 default:
                     command = null;
@@ -680,7 +680,7 @@ namespace SharpTimer
                                             IsVip INTEGER,
                                             BigGifID TEXT
                                         )";
-                    command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                    command = new SqliteCommand(query, (SqliteConnection)connection);
                     break;
                 default:
                     command = null;
@@ -743,7 +743,7 @@ namespace SharpTimer
                         Velocity TEXT,
                         PRIMARY KEY (MapName, SteamID, Stage)
                     )";
-                    command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                    command = new SqliteCommand(query, (SqliteConnection)connection);
                     break;
                 default:
                     command = null;
@@ -809,7 +809,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 @"SELECT TimesFinished, LastFinished, FormattedTime, TimerTicks, UnixStamp FROM PlayerRecords WHERE MapName = @MapName AND SteamID = @SteamID AND Style = @Style AND Mode = @Mode";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -919,7 +919,7 @@ namespace SharpTimer
                                                     Style = excluded.Style,
                                                     Mode = excluded.Mode;
                                                     ";
-                                upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 upsertQuery = null;
@@ -1053,7 +1053,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 upsertQuery =
                                     @"REPLACE INTO PlayerRecords (MapName, SteamID, PlayerName, TimerTicks, LastFinished, TimesFinished, FormattedTime, UnixStamp, Style, Mode) VALUES (@MapName, @SteamID, @PlayerName, @TimerTicks, @LastFinished, @TimesFinished, @FormattedTime, @UnixStamp, @Style, @Mode)";
-                                upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 upsertQuery = null;
@@ -1214,7 +1214,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 $@"SELECT PlayerName, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed FROM {PlayerStatsTable} WHERE SteamID = @SteamID";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -1335,7 +1335,7 @@ namespace SharpTimer
                                     upsertQuery =
                                         $@"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed) 
                                                         VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode, @HideChatSpeed)";
-                                    upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                    upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                     break;
                                 default:
                                     upsertQuery = null;
@@ -1391,8 +1391,8 @@ namespace SharpTimer
                                     break;
                                 case DatabaseType.SQLite:
                                     upsertQuery =
-                                        $@"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, ""Mode"", ""HideChatSpeed"") VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode)";
-                                    upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                        $@"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode)";
+                                    upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                     break;
                                 default:
                                     upsertQuery = null;
@@ -1478,7 +1478,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 @"SELECT FormattedTime, TimerTicks FROM PlayerStageTimes WHERE MapName = @MapName AND SteamID = @SteamID AND Stage = @Stage";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -1578,7 +1578,7 @@ namespace SharpTimer
                                                     Style = excluded.Style,
                                                     Mode = excluded.Mode;
                                                     ";
-                                upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 upsertQuery = null;
@@ -1637,7 +1637,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 upsertQuery =
                                     @"REPLACE INTO PlayerStageTimes (MapName, SteamID, PlayerName, Stage, TimerTicks, FormattedTime, Velocity, Style, Mode) VALUES (@MapName, @SteamID, @PlayerName, @Stage, @TimerTicks, @FormattedTime, @Velocity, @Style, @Mode)";
-                                upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 upsertQuery = null;
@@ -1722,7 +1722,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 $"SELECT PlayerName, TimesConnected, IsVip, BigGifID, GlobalPoints FROM {PlayerStatsTable} WHERE SteamID = @SteamID";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -1796,7 +1796,7 @@ namespace SharpTimer
                                 case DatabaseType.SQLite:
                                     upsertQuery =
                                         $"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode, @HideChatSpeed)";
-                                    upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                    upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                     break;
                                 default:
                                     upsertQuery = null;
@@ -1848,7 +1848,7 @@ namespace SharpTimer
                             {
                                 case DatabaseType.MySQL:
                                     upsertQuery =
-                                        $"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode)";
+                                        $"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode, @HideChatSpeed)";
                                     upsertCommand = new MySqlCommand(upsertQuery, (MySqlConnection)connection);
                                     break;
                                 case DatabaseType.PostgreSQL:
@@ -1858,8 +1858,8 @@ namespace SharpTimer
                                     break;
                                 case DatabaseType.SQLite:
                                     upsertQuery =
-                                        $"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode)";
-                                    upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                        $"REPLACE INTO {PlayerStatsTable} (PlayerName, SteamID, TimesConnected, LastConnected, HideTimerHud, HideKeys, SoundsEnabled, PlayerFov, IsVip, BigGifID, GlobalPoints, HideWeapon, HidePlayers, Mode, HideChatSpeed) VALUES (@PlayerName, @SteamID, @TimesConnected, @LastConnected, @HideTimerHud, @HideKeys, @SoundsEnabled, @PlayerFov, @IsVip, @BigGifID, @GlobalPoints, @HideWeapon, @HidePlayers, @Mode, @HideChatSpeed)";
+                                    upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                     break;
                                 default:
                                     upsertQuery = null;
@@ -1965,7 +1965,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 $@"SELECT GlobalPoints FROM {PlayerStatsTable} WHERE SteamID = @SteamID";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2009,7 +2009,7 @@ namespace SharpTimer
                                 case DatabaseType.SQLite:
                                     upsertQuery =
                                         $@"UPDATE {PlayerStatsTable} SET GlobalPoints = @GlobalPoints WHERE SteamID = @SteamID";
-                                    upsertCommand = new SQLiteCommand(upsertQuery, (SQLiteConnection)connection);
+                                    upsertCommand = new SqliteCommand(upsertQuery, (SqliteConnection)connection);
                                     break;
                                 default:
                                     upsertQuery = null;
@@ -2239,7 +2239,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 @"SELECT TimesFinished FROM PlayerRecords WHERE MapName = @MapName AND SteamID = @SteamID AND Style = @Style AND Mode = @Mode";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2295,7 +2295,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 query =
                                     $@"SELECT PlayerName, GlobalPoints FROM {PlayerStatsTable} ORDER BY GlobalPoints DESC LIMIT 10";
-                                command = new SQLiteCommand(query, (SQLiteConnection)connection);
+                                command = new SqliteCommand(query, (SqliteConnection)connection);
                                 break;
                             default:
                                 query = null;
@@ -2371,7 +2371,7 @@ namespace SharpTimer
                             break;
                         case DatabaseType.SQLite:
                             selectQuery = $"SELECT IsVip, BigGifID FROM {PlayerStatsTable} WHERE SteamID = @SteamID";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2474,7 +2474,7 @@ namespace SharpTimer
                                               "AND Mode = @Mode " +
                                               "ORDER BY TimerTicks ASC " +
                                               $"LIMIT 1 OFFSET {top10 - 1};";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -2500,7 +2500,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $"SELECT SteamID, PlayerName, TimerTicks FROM PlayerRecords WHERE MapName = @MapName AND Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT 1";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -2594,7 +2594,7 @@ namespace SharpTimer
                                               "AND Mode = @Mode " +
                                               "ORDER BY TimerTicks ASC " +
                                               $"LIMIT 1 OFFSET {top10 - 1};";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -2620,7 +2620,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $"SELECT SteamID, PlayerName, TimerTicks FROM PlayerStageTimes WHERE MapName = @MapName AND Stage = @Stage AND Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT 1";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -2715,7 +2715,7 @@ namespace SharpTimer
                                           "AND Mode = @Mode " +
                                           "ORDER BY TimerTicks ASC " +
                                           $"LIMIT 1;";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2791,7 +2791,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 "SELECT TimerTicks FROM PlayerRecords WHERE MapName = @MapName AND SteamID = @SteamID AND Style = @Style AND Mode = @Mode";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2861,7 +2861,7 @@ namespace SharpTimer
                         case DatabaseType.SQLite:
                             selectQuery =
                                 "SELECT TimerTicks FROM PlayerStageTimes WHERE MapName = @MapName AND SteamID = @SteamID AND Stage = @Stage";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2926,7 +2926,7 @@ namespace SharpTimer
                             break;
                         case DatabaseType.SQLite:
                             selectQuery = $"SELECT GlobalPoints FROM {PlayerStatsTable} WHERE SteamID = @SteamID";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -2994,7 +2994,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $@"SELECT SteamID, PlayerName, TimerTicks FROM PlayerRecords WHERE MapName = @MapName AND Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT {limit}";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3019,7 +3019,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     @"SELECT SteamID, PlayerName, TimerTicks FROM PlayerRecords WHERE MapName = @MapName AND Style = @Style AND Mode = @Mode";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3107,7 +3107,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $@"SELECT SteamID, PlayerName, TimerTicks, Completions FROM PlayerRecords WHERE MapName = @MapName AND Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT {limit}";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3132,7 +3132,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     @"SELECT SteamID, PlayerName, TimerTicks, Completions FROM PlayerRecords WHERE MapName = @MapName AND Style = @Style AND Mode = @Mode";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3246,7 +3246,7 @@ namespace SharpTimer
                                         FROM RankedPlayers
                                         ORDER BY GlobalPoints DESC
                                         LIMIT @limit";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -3319,7 +3319,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $@"SELECT SteamID, PlayerName, TimerTicks, MapName FROM PlayerRecords WHERE Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT {limit}";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3344,7 +3344,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     @"SELECT SteamID, PlayerName, TimerTicks, MapName FROM PlayerRecords WHERE Style = @Style AND Mode = @Mode";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3439,7 +3439,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     $@"SELECT SteamID, PlayerName, TimerTicks FROM PlayerStageTimes WHERE MapName = @MapName AND Stage = @Stage AND Style = @Style AND Mode = @Mode ORDER BY TimerTicks ASC LIMIT {limit}";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3464,7 +3464,7 @@ namespace SharpTimer
                             case DatabaseType.SQLite:
                                 selectQuery =
                                     @"SELECT SteamID, PlayerName, TimerTicks FROM PlayerStageTimes WHERE MapName = @MapName AND Stage = @Stage AND Style = @Style AND Mode = @Mode";
-                                selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                                selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                                 break;
                             default:
                                 selectQuery = null;
@@ -3537,7 +3537,7 @@ namespace SharpTimer
                             break;
                         case DatabaseType.SQLite:
                             selectQuery = $@"SELECT SteamID, PlayerName, GlobalPoints FROM {PlayerStatsTable}";
-                            selectCommand = new SQLiteCommand(selectQuery, (SQLiteConnection)connection);
+                            selectCommand = new SqliteCommand(selectQuery, (SqliteConnection)connection);
                             break;
                         default:
                             selectQuery = null;
@@ -3646,7 +3646,7 @@ namespace SharpTimer
                             break;
                         case DatabaseType.SQLite:
                             updateQuery = $@"UPDATE {PlayerStatsTable} SET GlobalPoints = 0";
-                            updateCommand = new SQLiteCommand(updateQuery, (SQLiteConnection)connection);
+                            updateCommand = new SqliteCommand(updateQuery, (SqliteConnection)connection);
                             break;
                         default:
                             updateQuery = null;
@@ -3698,7 +3698,7 @@ namespace SharpTimer
                         connection = new NpgsqlConnection(connectionString);
                         break;
                     case DatabaseType.SQLite:
-                        connection = new SQLiteConnection(connectionString);
+                        connection = new SqliteConnection(connectionString);
                         break;
                     default:
                         Utils.LogError($"Error: Invalid database type.");
@@ -3757,7 +3757,7 @@ namespace SharpTimer
                                             Style INTEGER,
                                             PRIMARY KEY (MapName, SteamID, Style)
                                         )";
-                            createTableCommand = new SQLiteCommand(createTableQuery, (SQLiteConnection)connection);
+                            createTableCommand = new SqliteCommand(createTableQuery, (SqliteConnection)connection);
                             break;
                         default:
                             createTableQuery = null;
@@ -3820,8 +3820,8 @@ namespace SharpTimer
                                         ON CONFLICT (MapName, SteamID, Style) DO UPDATE
                                         SET TimerTicks = CASE WHEN @TimerTicks < TimerTicks THEN @TimerTicks ELSE TimerTicks END,
                                         FormattedTime = CASE WHEN @TimerTicks < TimerTicks THEN @FormattedTime ELSE FormattedTime END";
-                                    insertOrUpdateCommand = new SQLiteCommand(insertOrUpdateQuery,
-                                        (SQLiteConnection)connection);
+                                    insertOrUpdateCommand = new SqliteCommand(insertOrUpdateQuery,
+                                        (SqliteConnection)connection);
                                     break;
                                 default:
                                     insertOrUpdateQuery = null;

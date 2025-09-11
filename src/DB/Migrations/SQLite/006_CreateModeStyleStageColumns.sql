@@ -21,7 +21,7 @@ SELECT MapName,
        FormattedTime,
        Velocity,
        0,
-       ''
+       'None'
 FROM PlayerStageTimes;
 
 DROP TABLE PlayerStageTimes;
