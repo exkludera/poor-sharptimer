@@ -283,10 +283,10 @@ namespace SharpTimer
 
                 if (wr)
                 {
-                    var sortedRecords = await GetSortedRecordsFromGlobal(GetNamedStyle(style), mode, bonusX, 1);
-                    wrID = sortedRecords[0].record_id;
-                    wrPlayerName = sortedRecords[0].player_name;
-                    wrTime = Utils.FormatDecimalTime(sortedRecords[0].time);
+                    var sortedRecords = await GetSortedRecordsFromGlobal(GetNamedStyle(style), mode, bonusX, 10);
+                    wrID = sortedRecords[top10-1].record_id;
+                    wrPlayerName = sortedRecords[top10-1].player_name;
+                    wrTime = Utils.FormatDecimalTime(sortedRecords[top10-1].time);
                 }
             }
 
