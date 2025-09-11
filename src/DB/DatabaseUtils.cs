@@ -3750,7 +3750,7 @@ namespace SharpTimer
                                     insertOrUpdateQuery =
                                         @"INSERT INTO ""PlayerRecords"" (""SteamID"", ""PlayerName"", ""TimerTicks"", ""FormattedTime"", ""MapName"", ""UnixStamp"", ""TimesFinished"", ""LastFinished"", ""Style"", ""Mode"")
                                         VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style, @Mode)
-                                        ON CONFLICT (""MapName"", ""SteamID"", ""Style"") DO UPDATE
+                                        ON CONFLICT (""MapName"", ""SteamID"", ""Style"", ""Mode"") DO UPDATE
                                         SET ""TimerTicks"" = CASE WHEN @TimerTicks < ""TimerTicks"" THEN @TimerTicks ELSE ""TimerTicks"" END,
                                         ""FormattedTime"" = CASE WHEN @TimerTicks < ""TimerTicks"" THEN @FormattedTime ELSE ""FormattedTime"" END";
                                     insertOrUpdateCommand = new NpgsqlCommand(insertOrUpdateQuery,
@@ -3760,7 +3760,7 @@ namespace SharpTimer
                                     insertOrUpdateQuery =
                                         @"INSERT INTO PlayerRecords (SteamID, PlayerName, TimerTicks, FormattedTime, MapName, UnixStamp, TimesFinished, LastFinished, Style, Mode)
                                         VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style, @Mode)
-                                        ON CONFLICT (MapName, SteamID, Style) DO UPDATE
+                                        ON CONFLICT (MapName, SteamID, Style, Mode) DO UPDATE
                                         SET TimerTicks = CASE WHEN @TimerTicks < TimerTicks THEN @TimerTicks ELSE TimerTicks END,
                                         FormattedTime = CASE WHEN @TimerTicks < TimerTicks THEN @FormattedTime ELSE FormattedTime END";
                                     insertOrUpdateCommand = new SqliteCommand(insertOrUpdateQuery,
