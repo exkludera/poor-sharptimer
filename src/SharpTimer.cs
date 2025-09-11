@@ -157,6 +157,14 @@ public partial class SharpTimer : BasePlugin
                     QAngle_t viewAngle = userCmd.GetViewAngles()!.Value;
                     ParseStrafes(player, new(viewAngle.X, viewAngle.Y, viewAngle.Z));
                 }
+                
+                // Startzonejump
+                if (playerTimers[player.Slot].inStartzone && playerTimers[player.Slot].StartZoneJumps >= 1)
+                {
+                    baseCmd.DisableForwardMove();
+                    baseCmd.DisableSideMove();
+                    return HookResult.Changed;
+                }
 
                 // Style Stuff
                 if ((playerTimers[player.Slot].IsTimerRunning || playerTimers[player.Slot].IsBonusTimerRunning) &&

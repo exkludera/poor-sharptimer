@@ -149,6 +149,8 @@ namespace SharpTimer
         public CurrentZoneInfo CurrentZoneInfo { get; set; } = new();
         public int currentStyle { get; set; }
         public bool changedStyle { get; set; }
+        public int StartZoneJumps { get; set; }
+        public bool WasOnGroundLastTick { get; set; }
 
         //replay
         public bool IsReplaying { get; set; }

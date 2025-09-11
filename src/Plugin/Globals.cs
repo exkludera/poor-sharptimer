@@ -259,6 +259,7 @@ namespace SharpTimer
         public bool isRankHUDTimerRunning = false;
 
         public bool resetTriggerTeleportSpeedEnabled = false;
+        public bool startzoneSingleJumpEnabled = false;
         public bool maxStartingSpeedEnabled = true;
         public int maxStartingSpeed = 320;
         public int maxBonusStartingSpeed = 320;

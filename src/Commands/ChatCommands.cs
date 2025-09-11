@@ -179,10 +179,7 @@ namespace SharpTimer
                 if (!validKey || !validHash || !validPlugins || !validCvars || !mapCache.Verified)
                 {
                     Utils.LogError($"GLOBAL CHECK FAILED -- Current Values:");
-                    Utils.LogError(
-                        $"sv_maxspeed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
-                    Utils.LogError(
-                        $"sharptimer_max_start_speed: {ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>()} [should be 320]");
+                    Utils.LogError($"sharptimer_startzone_single_jump: {startzoneSingleJumpEnabled} [should be true]");
                     Utils.LogError($"sv_cheats: {ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>()} [should be false]");
                     Utils.LogError($"Verified plugin version?: {validHash} [should be true]");
                     Utils.LogError($"Map is properly zoned?: {useTriggers} [should be true]");

@@ -133,8 +133,6 @@ public partial class SharpTimer
                         TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
                 }
                 
-                
-
                 if (Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}"))
                 {
                     globalDisabled = true;
@@ -152,6 +150,9 @@ public partial class SharpTimer
                     globalDisabled = true;
                     Utils.LogError("OverrideDisableTelehop detected for current map; disabling globalapi");
                 }
+
+                if (!isLinux)
+                    globalDisabled = true;
                 
                 InitializeModeConfigs();
             });

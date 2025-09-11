@@ -112,11 +112,28 @@ namespace SharpTimer
                         /* timer counting */
 
                         // remove jumping in startzone
-                        if (!startzoneJumping && playerTimers[player.Slot].inStartzone)
+                        if (!startzoneJumping && playerTimer.inStartzone)
                         {
                             if((playerButtons & PlayerButtons.Jump) != 0 || playerTimer.MovementService!.OldJumpPressed)
                                 playerPawn.AbsVelocity.Z = 0f;
                         }
+
+                        /* single startzone jump */
+                        bool wasOnGround = playerTimer.WasOnGroundLastTick;
+                        playerTimer.WasOnGroundLastTick = playerPawn.GroundEntity.IsValid;
+
+                        if (playerTimer.inStartzone && playerTimer.StartZoneJumps >= 1 && playerPawn.AbsVelocity.IsZero())
+                            playerTimer.StartZoneJumps = 0;
+
+                        if (playerTimer.inStartzone && !wasOnGround && playerPawn.GroundEntity.IsValid)
+                            playerTimer.StartZoneJumps++;
+
+                        if (playerTimer.StartZoneJumps == 1 && !wasOnGround)
+                        {
+                            playerPawn.AbsVelocity.X = 0;
+                            playerPawn.AbsVelocity.Y = 0;
+                        }
+                        /* single startzone jump */
 
                         /* hide weapons */
                         bool hasWeapons = playerPawn.WeaponServices?.MyWeapons?.Count > 0;

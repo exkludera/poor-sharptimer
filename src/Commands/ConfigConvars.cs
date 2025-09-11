@@ -1420,6 +1420,15 @@ namespace SharpTimer
 
             resetTriggerTeleportSpeedEnabled = bool.TryParse(args, out bool resetTriggerTeleportSpeedEnabledValue) ? resetTriggerTeleportSpeedEnabledValue : args != "0" && resetTriggerTeleportSpeedEnabled;
         }
+        
+        [ConsoleCommand("sharptimer_startzone_single_jump", "When true, players are only allowed to jump once in the startzone. Default value: false")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerStartzoneSingleJumpBoolConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            startzoneSingleJumpEnabled = bool.TryParse(args, out bool value) ? value : args != "0" && startzoneSingleJumpEnabled;
+        }
 
         [ConsoleCommand("sharptimer_max_start_speed_enabled", "Whether the players speed should be limited on exiting the starting trigger or not. Default value: false")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
@@ -1439,7 +1448,6 @@ namespace SharpTimer
             if (int.TryParse(args, out int speed) && speed > 0)
             {
                 maxStartingSpeed = speed;
-                Server.ExecuteCommand($"sv_maxspeed {maxStartingSpeed}");
                 Utils.LogDebug($"SharpTimer max trigger speed set to {speed}.");
             }
             else

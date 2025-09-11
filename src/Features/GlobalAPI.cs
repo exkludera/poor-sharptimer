@@ -963,8 +963,7 @@ namespace SharpTimer
         {
             var equal = Utils.IsApproximatelyEqual;
 
-            if (ConVar.Find("sv_cheats")!.GetPrimitiveValue<bool>() == false 
-                && equal(ConVar.Find("sv_maxspeed")!.GetPrimitiveValue<float>(), 320)
+            if (startzoneSingleJumpEnabled
                 && useCheckpointVerification
                 && useTriggers)
             { 
