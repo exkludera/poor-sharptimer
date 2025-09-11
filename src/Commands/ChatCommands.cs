@@ -147,8 +147,17 @@ namespace SharpTimer
 
             if (ReplayCheck(player))
                 return;
+
+            if (command.ArgCount == 0)
+            {
+                _ = Task.Run(async () => await ReplayHandler(player, slot, "1", "69", "unknown", 0,
+                    playerTimers[slot].currentStyle, true, playerTimers[slot].Mode));
+                return;
+            }
+
+            string arg = command.ArgByIndex(1);
             
-            _ = Task.Run(async () => await ReplayHandler(player, slot, "1", "69", "unknown", 0, playerTimers[slot].currentStyle, true, playerTimers[slot].Mode));
+            _ = Task.Run(async () => await ReplayHandler(player, slot, arg, "69", "unknown", 0, playerTimers[slot].currentStyle, true, playerTimers[slot].Mode));
         }
 
         [ConsoleCommand("css_gc", "Globalcheck")]
@@ -309,7 +318,7 @@ namespace SharpTimer
             if (wr)
                 playerTimers[slot].ReplayHUDString = $"{wrPlayerName} | {wrTime}";
             else
-                playerTimers[slot].ReplayHUDString = !self ? $"{srPlayerName} | {srTime}" : $"{playerName} | {playerTimers[slot].CachedPB}";
+                playerTimers[slot].ReplayHUDString = !self ? $"{srPlayerName} | {Utils.FormatTime(srTime)}" : $"{playerName} | {playerTimers[slot].CachedPB}";
 
             playerTimers[slot].IsTimerRunning = false;
             playerTimers[slot].TimerTicks = 0;
