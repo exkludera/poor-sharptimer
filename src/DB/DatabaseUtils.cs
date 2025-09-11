@@ -3710,64 +3710,7 @@ namespace SharpTimer
                     connection.Open();
 
                     // Check if the table exists, and create it if necessary
-                    string? createTableQuery = null;
-                    DbCommand? createTableCommand = null;
-                    switch (dbType)
-                    {
-                        case DatabaseType.MySQL:
-                            createTableQuery = @"CREATE TABLE IF NOT EXISTS PlayerRecords (
-                                            MapName VARCHAR(255),
-                                            SteamID VARCHAR(255),
-                                            PlayerName VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                                            TimerTicks INT,
-                                            FormattedTime VARCHAR(255),
-                                            UnixStamp INT,
-                                            TimesFinished INT,
-                                            LastFinished INT,
-                                            Style INT,
-                                            PRIMARY KEY (MapName, SteamID)
-                                        )";
-                            createTableCommand = new MySqlCommand(createTableQuery, (MySqlConnection)connection);
-                            break;
-                        case DatabaseType.PostgreSQL:
-                            createTableQuery = @"CREATE TABLE IF NOT EXISTS ""PlayerRecords"" (
-                                            ""MapName"" VARCHAR(255),
-                                            ""SteamID"" VARCHAR(255),
-                                            ""PlayerName"" VARCHAR(255),
-                                            ""TimerTicks"" INT,
-                                            ""FormattedTime"" VARCHAR(255),
-                                            ""UnixStamp"" INT,
-                                            ""TimesFinished"" INT,
-                                            ""LastFinished"" INT,
-                                            ""Style"" INT,
-                                            PRIMARY KEY (""MapName"", ""SteamID"", ""Style"")
-                                        )";
-                            createTableCommand = new NpgsqlCommand(createTableQuery, (NpgsqlConnection)connection);
-                            break;
-                        case DatabaseType.SQLite:
-                            createTableQuery = @"CREATE TABLE IF NOT EXISTS PlayerRecords (
-                                            MapName TEXT,
-                                            SteamID TEXT,
-                                            PlayerName TEXT,
-                                            TimerTicks INTEGER,
-                                            FormattedTime TEXT,
-                                            UnixStamp INTEGER,
-                                            TimesFinished INTEGER,
-                                            LastFinished INTEGER,
-                                            Style INTEGER,
-                                            PRIMARY KEY (MapName, SteamID, Style)
-                                        )";
-                            createTableCommand = new SqliteCommand(createTableQuery, (SqliteConnection)connection);
-                            break;
-                        default:
-                            createTableQuery = null;
-                            break;
-                    }
-
-                    using (createTableCommand)
-                    {
-                        await createTableCommand!.ExecuteNonQueryAsync();
-                    }
+                    await CheckTablesAsync();
 
                     foreach (var filePath in Directory.EnumerateFiles(playerRecordsPathh, "*.json"))
                     {
@@ -3795,8 +3738,8 @@ namespace SharpTimer
                             {
                                 case DatabaseType.MySQL:
                                     insertOrUpdateQuery =
-                                        @"INSERT INTO PlayerRecords (SteamID, PlayerName, TimerTicks, FormattedTime, MapName, UnixStamp, TimesFinished, LastFinished, Style)
-                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style)
+                                        @"INSERT INTO PlayerRecords (SteamID, PlayerName, TimerTicks, FormattedTime, MapName, UnixStamp, TimesFinished, LastFinished, Style, Mode)
+                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style, @Mode)
                                         ON DUPLICATE KEY UPDATE
                                         TimerTicks = IF(@TimerTicks < TimerTicks, @TimerTicks, TimerTicks),
                                         FormattedTime = IF(@TimerTicks < TimerTicks, @FormattedTime, FormattedTime)";
@@ -3805,8 +3748,8 @@ namespace SharpTimer
                                     break;
                                 case DatabaseType.PostgreSQL:
                                     insertOrUpdateQuery =
-                                        @"INSERT INTO ""PlayerRecords"" (""SteamID"", ""PlayerName"", ""TimerTicks"", ""FormattedTime"", ""MapName"", ""UnixStamp"", ""TimesFinished"", ""LastFinished"", ""Style"")
-                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style)
+                                        @"INSERT INTO ""PlayerRecords"" (""SteamID"", ""PlayerName"", ""TimerTicks"", ""FormattedTime"", ""MapName"", ""UnixStamp"", ""TimesFinished"", ""LastFinished"", ""Style"", ""Mode"")
+                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style, @Mode)
                                         ON CONFLICT (""MapName"", ""SteamID"", ""Style"") DO UPDATE
                                         SET ""TimerTicks"" = CASE WHEN @TimerTicks < ""TimerTicks"" THEN @TimerTicks ELSE ""TimerTicks"" END,
                                         ""FormattedTime"" = CASE WHEN @TimerTicks < ""TimerTicks"" THEN @FormattedTime ELSE ""FormattedTime"" END";
@@ -3815,8 +3758,8 @@ namespace SharpTimer
                                     break;
                                 case DatabaseType.SQLite:
                                     insertOrUpdateQuery =
-                                        @"INSERT INTO PlayerRecords (SteamID, PlayerName, TimerTicks, FormattedTime, MapName, UnixStamp, TimesFinished, LastFinished, Style)
-                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style)
+                                        @"INSERT INTO PlayerRecords (SteamID, PlayerName, TimerTicks, FormattedTime, MapName, UnixStamp, TimesFinished, LastFinished, Style, Mode)
+                                        VALUES (@SteamID, @PlayerName, @TimerTicks, @FormattedTime, @MapName, @UnixStamp, @TimesFinished, @LastFinished, @Style, @Mode)
                                         ON CONFLICT (MapName, SteamID, Style) DO UPDATE
                                         SET TimerTicks = CASE WHEN @TimerTicks < TimerTicks THEN @TimerTicks ELSE TimerTicks END,
                                         FormattedTime = CASE WHEN @TimerTicks < TimerTicks THEN @FormattedTime ELSE FormattedTime END";
@@ -3840,6 +3783,7 @@ namespace SharpTimer
                                 insertOrUpdateCommand!.AddParameterWithValue("@TimesFinished", 0);
                                 insertOrUpdateCommand!.AddParameterWithValue("@LastFinished", 0);
                                 insertOrUpdateCommand!.AddParameterWithValue("@Style", 0);
+                                insertOrUpdateCommand!.AddParameterWithValue("@Mode", "Standard");
 
                                 await insertOrUpdateCommand!.ExecuteNonQueryAsync();
                             }
