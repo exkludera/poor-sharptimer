@@ -844,12 +844,6 @@ namespace SharpTimer
                             dBFormattedTime = formattedTime;
                             playerPoints = timerTicks;
                             beatPB = true;
-                            if (enableReplays && !onlySRReplay) {
-                                if(useBinaryReplays)
-                                    _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                                else
-                                    _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                            }
                         }
                         else
                         {
@@ -907,7 +901,7 @@ namespace SharpTimer
                                                     (MapName, SteamID, PlayerName, TimerTicks, LastFinished, TimesFinished, FormattedTime, UnixStamp, Style, Mode)
                                                     VALUES 
                                                     (@MapName, @SteamID, @PlayerName, @TimerTicks, @LastFinished, @TimesFinished, @FormattedTime, @UnixStamp, @Style, @Mode)
-                                                    ON CONFLICT (MapName, SteamID, Style)
+                                                    ON CONFLICT (MapName, SteamID, Style, Mode)
                                                     DO UPDATE SET
                                                     MapName = excluded.MapName,
                                                     PlayerName = excluded.PlayerName,
@@ -942,6 +936,7 @@ namespace SharpTimer
 
                             var prevSRData = await GetMapRecordSteamIDFromDatabase(bonusX, 0, style, mode);
                             int prevSRTimerTicks = prevSRData.Item3;
+                            
                             await upsertCommand!.ExecuteNonQueryAsync();
                             Server.NextFrame(() =>
                                 Utils.LogDebug(
@@ -966,11 +961,23 @@ namespace SharpTimer
                                     newPts]));
                             }
 
-                            if (enableReplays && onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks)){
-                                if(useBinaryReplays)
-                                    _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                                else
-                                    _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                            if (enableReplays)
+                            {
+                                if (onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks))
+                                {
+                                    if(useBinaryReplays)
+                                        _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                    else
+                                        _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                }
+                                else if (!onlySRReplay)
+                                {
+                                    if(useBinaryReplays)
+                                        _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                    else
+                                        _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                }
+                                
                             }
 
                             Server.NextFrame(async () =>
@@ -979,7 +986,7 @@ namespace SharpTimer
                                     return;
                                  
                                  DateTimeOffset timeCreated = DateTimeOffset.UtcNow;
-                                 int playerId = playerCache.PlayerID[player];
+                                 int playerId = playerCache.PlayerID[slot];
 
                                  if (playerTimers[slot].Mode == "Custom")
                                     return;
@@ -993,7 +1000,7 @@ namespace SharpTimer
 
                                  var record_payload = new GlobalRecord
                                  {
-                                     player_id = playerCache.PlayerID[player],
+                                     player_id = playerId,
                                      server_id = serverCache.ServerID,
                                      map_id = mapCache.MapID,
                                      bonus = bonusX,
@@ -1028,12 +1035,6 @@ namespace SharpTimer
                     else
                     {
                         Server.NextFrame(() => Utils.LogDebug($"No player record yet"));
-                        if (enableReplays && !onlySRReplay){
-                            if(useBinaryReplays)
-                                _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                            else
-                                _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                        }
                         await row.CloseAsync();
 
                         string? upsertQuery;
@@ -1073,10 +1074,12 @@ namespace SharpTimer
                             upsertCommand!.AddParameterWithValue("@SteamID", steamId);
                             upsertCommand!.AddParameterWithValue("@Style", style);
                             upsertCommand!.AddParameterWithValue("@Mode", mode);
-                            await upsertCommand!.ExecuteNonQueryAsync();
                             
                             var prevSRData = await GetMapRecordSteamIDFromDatabase(bonusX, 0, style, mode);
                             int prevSRTimerTicks = prevSRData.Item3;
+                            
+                            await upsertCommand!.ExecuteNonQueryAsync();
+
                             if (globalRanksEnabled)
                             {
                                 var (oldPts, newPts) = await SavePlayerPoints(steamId, playerName, slot, timerTicks, dBtimerTicks, mode,
@@ -1099,20 +1102,32 @@ namespace SharpTimer
                                     steamId, playerName, dBtimerTicks, timerTicks, bonusX, 1, style, prevSRTimerTicks, mode)));
                             }
 
-                            if (enableReplays && onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks)){
-                                if(useBinaryReplays)
-                                    _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
-                                else
-                                    _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                            if (enableReplays)
+                            {
+                                if (onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks))
+                                {
+                                    if(useBinaryReplays)
+                                        _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                    else
+                                        _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                }
+                                else if (!onlySRReplay)
+                                {
+                                    if(useBinaryReplays)
+                                        _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                    else
+                                        _ = Task.Run(async () => await DumpReplayToJson(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
+                                }
+                                
                             }
 
                             Server.NextFrame(async () =>
                             {
-                                if (!mapCache.Verified)
+                                if (globalDisabled)
                                     return;
 
                                 DateTimeOffset timeCreated = DateTimeOffset.UtcNow;
-                                int playerId = playerCache.PlayerID[player];
+                                int playerId = playerCache.PlayerID[slot];
 
                                 if (playerTimers[slot].Mode == "Custom")
                                     return;
@@ -1126,7 +1141,7 @@ namespace SharpTimer
 
                                 var record_payload = new GlobalRecord
                                 {
-                                    player_id = playerCache.PlayerID[player],
+                                    player_id = playerId,
                                     server_id = serverCache.ServerID,
                                     map_id = mapCache.MapID,
                                     bonus = bonusX,

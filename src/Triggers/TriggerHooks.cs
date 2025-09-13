@@ -235,6 +235,8 @@ namespace SharpTimer
                             adjustVelocity(player, maxStartingSpeed, false);
                         }
 
+                        playerTimers[slot].CurrentZoneInfo.InMainMapStartZone = false;
+
                         Utils.LogDebug($"Player {playerName} left StartZone");
                     }
 
@@ -256,9 +258,9 @@ namespace SharpTimer
                         adjustVelocity(player, maxBonusStartingSpeed, false);
                     }
 
-                    Utils.LogDebug($"Player {playerName} left BonusStartZone {StartBonusX}");
+                    playerTimers[slot].CurrentZoneInfo.InBonusStartZone = false;
 
-                    return HookResult.Continue;
+                    Utils.LogDebug($"Player {playerName} left BonusStartZone {StartBonusX}");
                 }
                 return HookResult.Continue;
             }

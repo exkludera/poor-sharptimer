@@ -91,6 +91,8 @@ public partial class SharpTimer
         {
             await SetPlayerStats(player, player.SteamID.ToString(), player.PlayerName, player.Slot);
         });
+        playerTimers[player.Slot].RespawnPos = "";
+        playerTimers[player.Slot].BonusRespawnPos = "";
         ApplyModeSettings(player, mode);
     }
 

@@ -56,7 +56,7 @@ namespace SharpTimer
 
     public class PlayerCache
     {
-        public Dictionary<CCSPlayerController, int> PlayerID { get; set; } = new();
+        public Dictionary<int, int> PlayerID { get; set; } = new();
     }
 
     public class ServerCache

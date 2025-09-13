@@ -929,11 +929,11 @@ namespace SharpTimer
                     {
                         if (bonusRespawnAngs.TryGetValue(1, out QAngle_t? bonusAng) && bonusAng != null)
                         {
-                            player.PlayerPawn.Value!.Teleport(bonusRespawnPoses[1]!, bonusRespawnAngs[1]!);
+                            player.PlayerPawn.Value!.Teleport(bonusRespawnPoses[1]!, bonusRespawnAngs[1]!, new Vector_t(0, 0, 0));
                         }
                         else
                         {
-                            player.PlayerPawn.Value!.Teleport(bonusRespawnPoses[1]!, player.PlayerPawn.Value?.EyeAngles.ToQAngle_t());
+                            player.PlayerPawn.Value!.Teleport(bonusRespawnPoses[1]!, player.PlayerPawn.Value?.EyeAngles.ToQAngle_t(), new Vector_t(0, 0, 0));
                         }
                         Utils.LogDebug($"{player.PlayerName} css_rb {1} to {bonusRespawnPoses[1]}");
                     }
@@ -947,7 +947,9 @@ namespace SharpTimer
                         playerTimers[slot].TimerTicks = 0;
                         playerTimers[slot].IsBonusTimerRunning = false;
                         playerTimers[slot].BonusTimerTicks = 0;
+                        playerTimers[slot].IsTimerBlocked = false;
                     });
+                    PlaySound(player, respawnSound);
                     return;
                 }
 
@@ -1213,6 +1215,7 @@ namespace SharpTimer
             playerTimers[slot].TimerTicks = 0;
             playerTimers[slot].IsBonusTimerRunning = false;
             playerTimers[slot].BonusTimerTicks = 0;
+            playerTimers[slot].RespawnPos = "";
 
             if (pawn.MoveType == MoveType_t.MOVETYPE_NOCLIP)
             {
@@ -1461,6 +1464,7 @@ namespace SharpTimer
 
                 Server.NextFrame(() =>
                 {
+                    playerTimers[slot].StartZoneJumps = 0;
                     playerTimers[slot].IsTimerRunning = false;
                     playerTimers[slot].TimerTicks = 0;
                     playerTimers[slot].StageTicks = 0;

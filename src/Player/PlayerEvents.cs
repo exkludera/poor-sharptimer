@@ -48,6 +48,10 @@ namespace SharpTimer
 
                 try
                 {
+                    connectedPlayers.Remove(slot);
+                    playerTimers.Remove(slot);
+                    playerReplays.Remove(slot);
+                    
                     connectedPlayers[slot] = new CCSPlayerController(player.Handle);
                     var playerTime = new PlayerTimerInfo();
                     playerTimers[slot] = playerTime;
@@ -98,9 +102,7 @@ namespace SharpTimer
                         connectedPlayers.Remove(slot);
 
                     if (playerTimers.TryGetValue(slot, out var playerTimer) && playerTimer == null)
-                    {
                         playerTimers.Remove(slot);
-                    }
                 }
             }
             catch (Exception ex)

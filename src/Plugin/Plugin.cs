@@ -98,47 +98,39 @@ public partial class SharpTimer
                     sqlCheck = true;
                 }
 
-                if (apiKey != "")
+                string ip = Utils.GetIPAndPort().Item1;
+                int port = Utils.GetIPAndPort().Item2;
+                long addonID = GetAddonID();
+                validPlugins = CheckPlugins();
+                validCvars = CheckCvars();
+
+                Server.NextFrame(async () =>
                 {
-                    string ip = Utils.GetIPAndPort().Item1;
-                    int port = Utils.GetIPAndPort().Item2;
-                    long addonID = GetAddonID();
-                    validPlugins = CheckPlugins();
-                    validCvars = CheckCvars();
-                    
-                    Server.NextFrame(async () =>
+                    validKey = await CheckKeyAsync();
+                    validHash = await CheckHashAsync();
+                    if (!validKey || !validHash || !validPlugins || !validCvars)
+                        globalDisabled = true;
+
+                    int mapId = await GetMapIDAsync(addonID);
+                    await CacheMapData(mapId, addonID, mapName);
+                    await CacheWorldRecords(true);
+                    await CacheGlobalPoints(true);
+
+                    int serverId = await GetServerIDAsync(ip, port);
+                    CacheServerID(serverId);
+                    if (serverId == 0)
                     {
-                        validKey = await CheckKeyAsync();
-                        validHash = await CheckHashAsync();
-                        if (!validKey || !validHash || !validPlugins || !validCvars)
-                            globalDisabled = true;
-                        
-                        int mapId = await GetMapIDAsync(addonID);
-                        await CacheMapData(mapId, addonID, mapName);
-                        await CacheWorldRecords(true);
-                        await CacheGlobalPoints(true);
+                        // ip and port do not match what we have in the global db
+                        globalDisabled = true;
+                    }
+                });
 
-                        int serverId = await GetServerIDAsync(ip, port);
-                        CacheServerID(serverId);
-                        if (serverId == 0)
-                        {
-                            // ip and port do not match what we have in the global db
-                            globalDisabled = true;
-                        }
-                    });
-
-                    AddTimer(globalCacheInterval, async () => await CacheWorldRecords(),
-                        TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-                    AddTimer(globalCacheInterval, async () => await CacheGlobalPoints(),
-                        TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
-                }
-                
                 if (Directory.Exists($"{gameDir}/csgo/addons/StripperCS2/maps/{Server.MapName}"))
                 {
                     globalDisabled = true;
                     Utils.LogError("StripperCS2 detected for current map; disabling globalapi");
                 }
-                
+
                 if (!File.Exists($"{gameDir}/csgo/addons/metamod/stfixes-metamod.vdf"))
                 {
                     globalDisabled = true;
@@ -153,7 +145,14 @@ public partial class SharpTimer
 
                 if (!isLinux)
                     globalDisabled = true;
-                
+
+                if (!globalDisabled)
+                {
+                    AddTimer(globalCacheInterval, async () => await CacheWorldRecords(),
+                        TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+                    AddTimer(globalCacheInterval, async () => await CacheGlobalPoints(),
+                        TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+                }
                 InitializeModeConfigs();
             });
         }

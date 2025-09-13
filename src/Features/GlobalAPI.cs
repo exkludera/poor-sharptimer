@@ -24,9 +24,6 @@ namespace SharpTimer
 
         public async Task SubmitRecordAsync(object payload)
         {
-            if (apiKey == "")
-                return;
-
             if (globalDisabled)
                 return;
 
@@ -57,9 +54,6 @@ namespace SharpTimer
         
         public async Task SubmitPointsAsync(int playerId, int points, int recordID)
         {
-            if (apiKey == "")
-                return;
-
             if (globalDisabled)
                 return;
 
@@ -96,9 +90,8 @@ namespace SharpTimer
 
         public async Task UpdatePlayerAsync(long steamid64, string name)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return;
-
             try
             {
                 var payload = new
@@ -131,7 +124,7 @@ namespace SharpTimer
         
         public async Task UpdateTotalPointsAsync(int playerId)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return;
 
             try
@@ -165,7 +158,7 @@ namespace SharpTimer
         
         public async Task<int> GetPlayerIDAsync (long steamid64)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return 0;
 
             try
@@ -206,7 +199,7 @@ namespace SharpTimer
         
         public async Task<int> GetServerIDAsync (string ip, int port)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return 0;
 
             try
@@ -248,6 +241,9 @@ namespace SharpTimer
         
         public async Task<int> GetMapIDAsync (long workshop_id)
         {
+            if (globalDisabled)
+                return 0;
+            
             try
             {
                 var payload = new
@@ -301,7 +297,7 @@ namespace SharpTimer
 
         public async Task<bool> CheckAddonAsync(long addonId)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return false;
 
             try
@@ -349,6 +345,9 @@ namespace SharpTimer
 
         public async Task CacheWorldRecords(bool initial = false)
         {
+            if (globalDisabled)
+                return;
+            
             IEnumerable<CCSPlayerController> players = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller");
 
             if (!players.Any() && !initial)
@@ -371,6 +370,9 @@ namespace SharpTimer
 
         public async Task CacheGlobalPoints(bool initial = false)
         {
+            if (globalDisabled)
+                return;
+            
             IEnumerable<CCSPlayerController> players = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller");
 
             if (!players.Any() && !initial)
@@ -382,20 +384,26 @@ namespace SharpTimer
 
         public void CachePlayerID (CCSPlayerController player, int playerId)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return;
             
-            playerCache.PlayerID[player] = playerId;
+            playerCache.PlayerID[player.Slot] = playerId;
         }
 
         public void CacheServerID(int serverId)
         {
+            if (globalDisabled)
+                return;
+            
             serverCache.ServerID = serverId;
             Utils.LogDebug($"Server ID: {serverCache.ServerID}");
         }
         
         public async Task CacheMapData(int mapId, long addonId, string mapName)
         {
+            if (globalDisabled)
+                return;
+            
             mapCache.MapID = mapId;
             mapCache.AddonID = addonId;
             mapCache.MapName = mapName;
@@ -409,8 +417,8 @@ namespace SharpTimer
 
         public async Task<List<PlayerPoints>> GetTopPointsAsync(int limit = 10)
         {
-            if (apiKey == "")
-                return null!;
+            if (globalDisabled)
+                return new List<PlayerPoints>();
 
             try
             {
@@ -467,7 +475,7 @@ namespace SharpTimer
 
         public async Task<int> GetRecordIDAsync(int playerId, DateTimeOffset createdOn)
         {
-            if (apiKey == "")
+            if (globalDisabled)
                 return 0;
 
             try
@@ -525,7 +533,7 @@ namespace SharpTimer
             {
                 var payload = new
                 {
-                    player_id = playerCache.PlayerID[player]
+                    player_id = playerCache.PlayerID[player.Slot]
                 };
                 string jsonPayload = JsonSerializer.Serialize(payload);
                 var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");

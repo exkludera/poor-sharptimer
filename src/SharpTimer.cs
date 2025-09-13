@@ -159,7 +159,7 @@ public partial class SharpTimer : BasePlugin
                 }
                 
                 // Startzonejump
-                if (playerTimers[player.Slot].inStartzone && playerTimers[player.Slot].StartZoneJumps >= 1)
+                if (startzoneSingleJumpEnabled && (playerTimers[player.Slot].inStartzone || playerTimers[player.Slot].CurrentZoneInfo.InBonusStartZone) && playerTimers[player.Slot].StartZoneJumps >= 1)
                 {
                     baseCmd.DisableForwardMove();
                     baseCmd.DisableSideMove();
