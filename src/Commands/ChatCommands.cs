@@ -156,8 +156,32 @@ namespace SharpTimer
             }
 
             string arg = command.ArgByIndex(1);
-            
+
             _ = Task.Run(async () => await ReplayHandler(player, slot, arg, "69", "unknown", 0, playerTimers[slot].currentStyle, true, playerTimers[slot].Mode));
+        }
+
+        [ConsoleCommand("css_replaywrb", "Replay the current bonus map/mode world record")]
+        [ConsoleCommand("css_replaywrbonus", "Replay the current bonus map/mode world record")]
+        [CommandHelper(minArgs: 1, usage: "[1-10] [bonus stage]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void ReplayTop10WRBCommand(CCSPlayerController? player, CommandInfo command)
+        {
+            if (!IsAllowedPlayer(player) || enableReplays == false)
+                return;
+
+            int slot = player!.Slot;
+
+            QuietStopTimer(player);
+
+            if (IsTimerBlocked(player))
+                return;
+
+            if (ReplayCheck(player))
+                return;
+
+            string arg = command.ArgByIndex(1);
+            string arg2 = command.ArgByIndex(2);
+            
+            _ = Task.Run(async () => await ReplayHandler(player, slot, arg, "69", "unknown", Int16.Parse(arg2), playerTimers[slot].currentStyle, true, playerTimers[slot].Mode));
         }
 
         [ConsoleCommand("css_gc", "Globalcheck")]
