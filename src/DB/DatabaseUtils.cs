@@ -965,7 +965,7 @@ namespace SharpTimer
                             {
                                 if (onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks))
                                 {
-                                    if (timerTicks < dBtimerTicks)
+                                    if (dBtimerTicks == 0 || timerTicks < dBtimerTicks)
                                     {
                                         if (useBinaryReplays)
                                             _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
@@ -975,7 +975,7 @@ namespace SharpTimer
                                 }
                                 else if (!onlySRReplay)
                                 {
-                                    if (timerTicks < dBtimerTicks)
+                                    if (dBtimerTicks == 0 || timerTicks < dBtimerTicks)
                                     {
                                         if (useBinaryReplays)
                                             _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
@@ -1112,7 +1112,7 @@ namespace SharpTimer
                             {
                                 if (onlySRReplay && (prevSRTimerTicks == 0 || prevSRTimerTicks > timerTicks))
                                 {
-                                    if (timerTicks < dBtimerTicks)
+                                    if (dBtimerTicks == 0 || timerTicks < dBtimerTicks)
                                     {
                                         if (useBinaryReplays)
                                             _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
@@ -1122,7 +1122,7 @@ namespace SharpTimer
                                 }
                                 else if (!onlySRReplay)
                                 {
-                                    if (timerTicks < dBtimerTicks)
+                                    if (dBtimerTicks == 0 || timerTicks < dBtimerTicks)
                                     {
                                         if (useBinaryReplays)
                                             _ = Task.Run(async () => await DumpReplayToBinary(player!, steamId, slot, bonusX, playerTimers[slot].currentStyle, playerTimers[slot].Mode));
