@@ -129,6 +129,9 @@ namespace SharpTimer
                             string tableprefix = root.TryGetProperty("TablePrefix", out var tableprefixProperty)
                                 ? tableprefixProperty.GetString()!
                                 : "";
+                            string sslMode = root.TryGetProperty("SslMode", out var sslModeProperty)
+                                ? sslModeProperty.GetString()!
+                                : "Preferred";
 
                             PlayerStatsTable = $"{(tableprefix != "" ? $"PlayerStats_{tableprefix}" : "PlayerStats")}";
 
@@ -138,7 +141,7 @@ namespace SharpTimer
                                     ? timeoutProperty.GetInt32()!
                                     : 30;
                                 return
-                                    $"Server={host};Database={database};User ID={username};Password={password};Port={port};CharSet=utf8mb4;Connection Timeout={timeout};";
+                                    $"Server={host};Database={database};User ID={username};Password={password};Port={port};CharSet=utf8mb4;Connection Timeout={timeout};SslMode={sslMode}";
                             }
                             else if (dbType.Equals(DatabaseType.PostgreSQL))
                             {
