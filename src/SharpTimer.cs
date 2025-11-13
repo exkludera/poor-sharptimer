@@ -243,7 +243,6 @@ public partial class SharpTimer : BasePlugin
                     playerTimers[player.Slot].currentStyle.Equals(11) && usingUse) //parachute
                 {
                     Schema.SetSchemaValue(player!.Pawn.Value!.Handle, "CBaseEntity", "m_flActualGravityScale", 0.2f);
-                    Utilities.SetStateChanged(player!.Pawn.Value!, "CBaseEntity", "m_flActualGravityScale");
                     return HookResult.Changed;
                 }
 
@@ -251,7 +250,6 @@ public partial class SharpTimer : BasePlugin
                     playerTimers[player.Slot].currentStyle.Equals(11) && !usingUse) //parachute
                 {
                     Schema.SetSchemaValue(player!.Pawn.Value!.Handle, "CBaseEntity", "m_flActualGravityScale", 1f);
-                    Utilities.SetStateChanged(player!.Pawn.Value!, "CBaseEntity", "m_flActualGravityScale");
                     return HookResult.Changed;
                 }
 
@@ -412,6 +410,15 @@ public partial class SharpTimer : BasePlugin
         {
             if (spawnOnRespawnPos == true && currentRespawnPos != null)
                 playerPawn.Teleport(currentRespawnPos);
+
+            if (removeLegsEnabled == true)
+            {
+                Server.NextWorldUpdate(() =>
+                {
+                    playerPawn.Render = Color.FromArgb(254, playerPawn.Render.R, playerPawn.Render.G, playerPawn.Render.B);
+                    Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
+                });
+            }
         });
 
         if (apiKey != "")
@@ -460,13 +467,6 @@ public partial class SharpTimer : BasePlugin
 
             Server.NextFrame(() => InvalidateTimer(player));
         }
-
-        if (removeLegsEnabled == true)
-        {
-            playerPawn.Render = Color.FromArgb(254, 254, 254, 254);
-            Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
-        }
-
 
         return HookResult.Continue;
     }
